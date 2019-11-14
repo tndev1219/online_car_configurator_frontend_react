@@ -26,6 +26,28 @@ button:focus{
     text-transform: capitalize;
   }
 }
+.button-outline{
+  padding:0.5rem 1rem !important;
+  border:1px solid $primary !important;
+  cursor: pointer;
+  span{
+    color:$primary;
+    font-family:inherit;
+    font-size: 0.875rem;
+    font-weight:$font-weight-medium;
+    letter-spacing: 0.5px;
+    text-transform: capitalize;
+  }
+  .right-icon{
+    fill: $primary
+  }
+}
+.btn-white{
+  border:1px solid $base !important;
+  span{
+    color:$base;
+  }
+}
 .btn-primary{
    background-color: $primary !important; 
    span{

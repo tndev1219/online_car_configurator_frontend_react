@@ -4,7 +4,7 @@
 //----- vertical-menu style -------
 .sidebar-area {
      overflow-y: scroll;   
-    >div:nth-child(2){
+    >div:nth-child(3){
         background-image: url("../../assets/images/bg-sidebar.jpg") !important;
         background-position: center center;
         background-size: cover;
@@ -85,7 +85,7 @@
             position: relative;
             &:after{
                 position: absolute;
-                content: "\F2FB";
+                content: "#{'\203a'}";
                 font-family: 'Material-Design-Iconic-Font';
                 right: 1.5rem;
                 top: 0;

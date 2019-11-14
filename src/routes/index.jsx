@@ -1,14 +1,27 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, Fragment } from 'react';
 
 import { Switch, Route } from "react-router-dom";
+import styled from 'styled-components';
+import { IntlProvider } from 'react-intl';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+
+import Loader from '../components/Loader/Loader';
+
+// themes
+import primaryTheme from '../themes/primaryTheme';
 
 // Private route guard 
 import PrivateRoute from '../components/PrivateRoute';
 
-import Loader from '../components/Loader/Loader';
+//layout 
+import HeaderOne from "../components/layouts/headers/HeaderOne";
+import FooterOne from "../components/layouts/footers/FooterOne";
 
+// footer data
+import footerData from '../assets/data/footerData';
 
-import styled from 'styled-components';
+// App locale
+import AppLocale from '../lang';
 
 // Public component
 const Signin = lazy(() => import('../views/auth/signin'));
@@ -16,9 +29,12 @@ const Signup = lazy(() => import('../views/auth/signup'));
 const ForgotPassword = lazy(() => import('../views/auth/forgot-password'));
 const ResetPassword = lazy(() => import('../views/auth/reset-password'));
 const PageNotFound = lazy(() => import('../views/page-404'));
+const Home = lazy(() => import('../views/home'));
+const Vehicles = lazy(() => import('../views/vehicles'));
+const Config = lazy(() => import('../views/config'));
 
 // Private route
-const Home = lazy(() => import('../views/home'));
+
 
 const PUBLIC_ROUTES = [
   {
@@ -40,13 +56,25 @@ const PUBLIC_ROUTES = [
     component: ResetPassword,
     url: '/reset-password/:token',
     exact: true
-  }
-]
-
-const PRIVATE_ROUTES = [
+  },
   {
     component: Home,
     url: '/',
+    exact: true
+  },
+  {
+    component: Home,
+    url: '/home',
+    exact: true
+  },
+  {
+    component: Vehicles,
+    url: '/vehicles',
+    exact: true
+  },
+  {
+    component: Config,
+    url: '/config',
     exact: true
   },
   {
@@ -54,8 +82,10 @@ const PRIVATE_ROUTES = [
     url: '*',
     exact: false
   }
-]
+];
 
+const PRIVATE_ROUTES = [
+];
 
 const LoaderWrapper = styled.div`
   width: 100%;
@@ -65,25 +95,53 @@ const LoaderWrapper = styled.div`
   justify-content: center;
 `;
 
-const Routes = () => {
+const Routes = (props) => {
   const render_public_route = [];
   const render_private_route = [];
-
+  
+  const { location } = props;
+  const currentAppLocale = AppLocale['en'];
+  
   PUBLIC_ROUTES.map((route, key) =>
     render_public_route.push(<Route path={route.url} key={route.url + key} component={route.component} exact={route.exact} />)
-  )
-
+  );
+  
   PRIVATE_ROUTES.map((route, key) =>
     render_private_route.push(<PrivateRoute path={route.url} key={route.url + key} component={route.component} exact={route.exact} />)
-  )
+  );
+  
+  const getUrl = (pathname) => {
+    let pathArray = pathname.split('/');
+    return `/${pathArray[1]}` === '/config' ? true : false;
+  };
 
   return (
-    <Suspense fallback={<LoaderWrapper><Loader /></LoaderWrapper>}>
-      <Switch>
-        {render_public_route}
-        {render_private_route}
-      </Switch>
-    </Suspense>
+    <MuiThemeProvider theme={primaryTheme}>
+      <IntlProvider
+        textComponent="span"
+        locale={currentAppLocale.locale}
+        messages={currentAppLocale.messages}
+      >
+        <Fragment>
+          <div className="app-container">
+            {!getUrl(location.pathname) &&
+              <Fragment>
+                <HeaderOne />
+              </Fragment>
+            }
+            <Suspense fallback={<LoaderWrapper><Loader /></LoaderWrapper>}>
+              <Switch>
+                {render_public_route}
+                {render_private_route}
+              </Switch>
+            </Suspense>
+            {!getUrl(location.pathname) &&
+              <FooterOne data={footerData} />
+            }
+          </div>
+        </Fragment>
+      </IntlProvider>
+    </MuiThemeProvider>
   );
 }
 

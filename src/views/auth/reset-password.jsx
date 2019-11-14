@@ -14,7 +14,6 @@ import ResetPassword from '../../components/UI/Forms/ResetPassword';
 class ResetPasswordPage extends Component {
 
   render() {
-    console.log('reset password')
     return (
       this.props.loggedIn ?
         <Redirect to="/" />
@@ -23,7 +22,7 @@ class ResetPasswordPage extends Component {
           <Helmet>
             <title>Car | Reset Password</title>
           </Helmet>
-          <div className="inner-container bg-base">
+          <div className="inner-container section-pad bg-base">
             <div className="container">
               <Grid container spacing={0}>
                 <Grid item xs={12} sm={12} md={10} lg={9} className="mx-auto">

@@ -3,6 +3,10 @@
 -----------------------------------------------------------*/
 
 //------features section style------
+.iron-home-wrap {
+   min-height: 50vh;
+}
+
 .iron-features-v1{
     box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 
     0 2px 1px -1px rgba(0,0,0,0.12),
@@ -237,7 +241,7 @@
 
 //------- testimonial v2 -------
 .testimonial-v2{
-    background-image: url("../../assets/images/about-bg.jpg");
+    // background-image: url("../../assets/images/about-bg.jpg");
     span{
         font-size: 14px;
     }
@@ -368,7 +372,7 @@
 //-------- page title bar -------
 .page-title-bar{
     padding: $page-title-padding;
-    background-image: $page-title-bg-image;
+    // background-image: $page-title-bg-image;
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -388,7 +392,7 @@
     }
     .about-contact-form{
         .about-contact-bg{
-            background-image: url("../../assets/images/about-contact.jpg");
+            // background-image: url("../../assets/images/about-contact.jpg");
             padding: 23rem 0;
             background-size: cover;
             background-position: center center;
@@ -461,7 +465,7 @@
 
 //------ call to action v1 style --------
 .cta-v1{
-    background-image:url("../../assets/images/offers.jpg");
+    // background-image:url("../../assets/images/offers.jpg");
     background-position: center center;
     background-repeat: no-repeat;
     background-size:cover;
@@ -504,7 +508,7 @@
         margin-top: -60px;
     }
     .thank-you-image {
-        background-image: url("../../assets/images/thank-you.jpg");
+        // background-image: url("../../assets/images/thank-you.jpg");
         background-size: cover;
         padding: 10rem 0;
         background-position: center center;
@@ -1262,7 +1266,7 @@
     }
 }
 .cta-banner-wrap{
-    background: url('../../assets/images/cta-bg-pat.png');
+    // background: url('../../assets/images/cta-bg-pat.png');
     background-size: 25px;
     padding:92px 0;
     .overlay-section-overlay{
@@ -1394,4 +1398,37 @@
             padding:0.75rem 1rem !important;           
         }
     }
+}
+
+// ----- Vehicles page style ----- //
+.brand-hover:hover {
+   span {
+      color: $active;
+   }
+}
+
+// ----- Config page style ----- //
+.contents-drawer {
+   .MuiDrawer-paperAnchorLeft {
+      left: 96px !important;
+   }
+   
+   .MuiBackdrop-root {
+      right: unset !important;
+   }
+}
+
+.outlined-slt-label-sm {
+   line-height: 0.5 !important;
+}
+
+.MuiOutlinedInput-input {
+   padding: 14px 14px !important;
+}
+
+// ---- SweetAlert Css ---- //
+.iron-alert-box {
+   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+               0 2px 2px 0 rgba(0, 0, 0, 0.14),
+               0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
 }
