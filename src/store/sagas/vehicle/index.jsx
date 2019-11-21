@@ -37,9 +37,9 @@ export function* getVehicles() {
 }
 
 export function* getPartials() {
-   yield takeEvery(vehicleTypes.GET_PARTIALS, function* () {
+   yield takeEvery(vehicleTypes.GET_PARTIALS, function* (payload) {
       try {
-         const res = yield call(api.POST, 'getPartials');
+         const res = yield call(api.POST, 'getPartials', {vehicle_type: payload.selectedVehicleType});
 
          if (res.data.success) {
             yield put({

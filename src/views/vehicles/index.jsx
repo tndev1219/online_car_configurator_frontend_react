@@ -48,7 +48,7 @@ const Vehicles = () => {
                            >
                               <Button>
                                  <Card className="iron-shop-item iron-shadow hover-box-shadow">
-                                    <Link to={'/config'} className='d-block' onClick={() => dispatch(vehicleActions.selectModel(vehicle.modelPath))}>
+                                    <Link to={'/config'} className='d-block' onClick={() => dispatch(vehicleActions.selectModel(vehicle.modelPath, vehicle.vehicleType))}>
                                        <CardMedia
                                           height="140"
                                           component="img"

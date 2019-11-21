@@ -12,9 +12,10 @@ export const selectBrand = data => ({
 });
 
 // select model action creator
-export const selectModel = data => ({
+export const selectModel = (selectedModelPath, selectedVehicleType) => ({
    type: SELECT_MODEL,
-   selectedModel: data
+   selectedModel: selectedModelPath,
+   selectedVehicleType: selectedVehicleType
 });
 
 // Get Vehicles Model Data Action
@@ -23,6 +24,7 @@ export const getVehicles = () => ({
 });
 
 // Get Partials Model Data Action
-export const getPartials = () => ({
-   type: GET_PARTIALS
+export const getPartials = (selectedVehicleType) => ({
+   type: GET_PARTIALS,
+   selectedVehicleType: selectedVehicleType
 });

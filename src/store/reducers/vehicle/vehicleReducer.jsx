@@ -8,6 +8,7 @@ import {
 const initState = {
    selectedBrand: 'menu.abarth',
    selectedModel: '',
+   selectedVehicleType: '',
    vehiclesData: [],
    wheelsData: [],
    tiresData: [],
@@ -1075,7 +1076,8 @@ const vehicleReducer = (state = initState, action) => {
       case SELECT_MODEL:
          return {
             ...state,
-            selectedModel: action.selectedModel
+            selectedModel: action.selectedModel,
+            selectedVehicleType: action.selectedVehicleType
          };
 
       case GET_VEHICLES_SUCCESS:

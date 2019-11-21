@@ -140,10 +140,11 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
 
    const classes = useStyles();
    const dispatch = useDispatch();
-   
+   const selectedVehicleType = useSelector(state => state.vehicle.selectedVehicleType);
+
    useEffect(() => {
-      dispatch(vehicleActions.getPartials());
-   }, [dispatch]);
+      dispatch(vehicleActions.getPartials(selectedVehicleType));
+   }, [dispatch, selectedVehicleType]);
    
    const wheelsData               = useSelector(state => state.vehicle.wheelsData);   
    const tiresData                = useSelector(state => state.vehicle.tiresData);
