@@ -16,6 +16,7 @@ import MenuItem                       from '@material-ui/core/MenuItem';
 import Slider                         from '@material-ui/core/Slider';
 import IconButton                     from '@material-ui/core/IconButton';
 
+import DirectionsCarRoundedIcon from '@material-ui/icons/DirectionsCarRounded';
 import CameraRoundedIcon              from '@material-ui/icons/CameraRounded';
 import AlbumRoundedIcon               from '@material-ui/icons/AlbumRounded';
 import AllInboxRoundedIcon            from '@material-ui/icons/AllInboxRounded';
@@ -87,7 +88,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const partialBar = [
-   { index: 0, icon: <CameraRoundedIcon />,             label: 'Body',             showStateLabel: 'Body'            },
+   { index: 0,  icon: <DirectionsCarRoundedIcon />,      label: 'Body',             showStateLabel: 'Body'            },
    { index: 1,  icon: <CameraRoundedIcon />,             label: 'Wheel',            showStateLabel: 'Wheel'           },
    { index: 2,  icon: <AlbumRoundedIcon />,              label: 'Tire',             showStateLabel: 'Tire'            },
    { index: 3,  icon: <AllInboxRoundedIcon />,           label: 'Suspension',       showStateLabel: 'Suspension'      },
@@ -97,7 +98,7 @@ const partialBar = [
    { index: 7,  icon: <CastConnectedRoundedIcon />,      label: 'Fender',           showStateLabel: 'Fender'          },
    { index: 8,  icon: <AccountBalanceRoundedIcon />,     label: 'Grille',           showStateLabel: 'Grille'          },
    { index: 9,  icon: <HighlightRoundedIcon />,          label: 'Headlight',        showStateLabel: 'Headlight'       },
-   { index: 10,  icon: <TableChartRoundedIcon />,         label: 'Hood',             showStateLabel: 'Hood'            },
+   { index: 10, icon: <TableChartRoundedIcon />,         label: 'Hood',             showStateLabel: 'Hood'            },
    { index: 11, icon: <CalendarTodayRoundedIcon />,      label: 'Bed Cover',        showStateLabel: 'BedCover'        },
    { index: 12, icon: <EventNoteRoundedIcon />,          label: 'Bed Accessory',    showStateLabel: 'BedAccessory'    },
    { index: 13, icon: <BlurCircularRoundedIcon />,       label: 'Additional Light', showStateLabel: 'AdditionalLight' },
