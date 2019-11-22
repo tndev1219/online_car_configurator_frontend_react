@@ -10,6 +10,44 @@ const initState = {
    selectedModel: '',
    selectedVehicleType: '',
    vehiclesData: [],
+   bodyData: [
+      {
+         id: 1,
+         label: 'Body 1',
+         paths: [
+            {
+               imagePath: '',
+               modelName: 'body 1.1',
+               modelPath: '',
+               modelType: 'body'
+            },
+            {
+               imagePath: '',
+               modelName: 'body 1.2',
+               modelPath: '',
+               modelType: 'body'
+            }
+         ]
+      },
+      {
+         id: 2,
+         label: 'Body 2',
+         paths: [
+            {
+               imagePath: '',
+               modelName: 'body 2.1',
+               modelPath: '',
+               modelType: 'body'
+            },
+            {
+               imagePath: '',
+               modelName: 'body 2.2',
+               modelPath: '',
+               modelType: 'body'
+            }
+         ]
+      }
+   ],
    wheelsData: [],
    tiresData: [],
    suspensionsData: [],
@@ -49,6 +87,84 @@ const initState = {
       3: [{ id: 0, label: 16 }],
       4: [{ id: 0, label: 16 }],
    },
+   bodyColorData: [
+      {
+         id: 0,
+         value: '#010101',
+         colorName: 'Black',
+         modelType: 'body'
+      }, {
+         id: 1,
+         value: '#e5e5e5',
+         colorName: 'Pure White',
+         modelType: 'body'
+      }, {
+         id: 2,
+         value: '#b5b5b5',
+         colorName: 'Silver Leap',
+         modelType: 'body'
+      }, {
+         id: 3,
+         value: '#170e3e',
+         colorName: 'Deep Blue',
+         modelType: 'body'
+      }, {
+         id: 4,
+         value: '#1f2267',
+         colorName: 'Telefonica Blue',
+         modelType: 'body'
+      }, {
+         id: 5,
+         value: '#3654a9',
+         colorName: 'Billiant Blue',
+         modelType: 'body'
+      }, {
+         id: 6,
+         value: '#536591',
+         colorName: 'Periwinkle',
+         modelType: 'body'
+      }, {
+         id: 7,
+         value: '#1d3025',
+         colorName: 'Racing Green',
+         modelType: 'body'
+      }, {
+         id: 8,
+         value: '#1d931a',
+         colorName: 'Candy Lime Green',
+         modelType: 'body'
+      }, {
+         id: 9,
+         value: '#71301f',
+         colorName: 'Dull Red',
+         modelType: 'body'
+      }, {
+         id: 10,
+         value: '#a91a15',
+         colorName: 'Mica Red',
+         modelType: 'body'
+      }, {
+         id: 11,
+         value: '#5d422d',
+         colorName: 'Red Brown',
+         modelType: 'body'
+      }, {
+         id: 12,
+         value: '#49595b',
+         colorName: 'Gunship Grey',
+         modelType: 'body'
+      }, {
+         id: 13,
+         value: '#525252',
+         colorName: 'Light Gun Metal',
+         modelType: 'body'
+      }, {
+         id: 14,
+         value: '#d86408',
+         colorName: 'Orange',
+         modelType: 'body'
+      }
+   ],
    wheelsColorData: [
       {
          id: 0,

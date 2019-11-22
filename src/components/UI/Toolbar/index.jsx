@@ -87,20 +87,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const partialBar = [
-   { index: 0,  icon: <CameraRoundedIcon />,             label: 'Wheel',            showStateLabel: 'Wheel'           },
-   { index: 1,  icon: <AlbumRoundedIcon />,              label: 'Tire',             showStateLabel: 'Tire'            },
-   { index: 2,  icon: <AllInboxRoundedIcon />,           label: 'Suspension',       showStateLabel: 'Suspension'      },
-   { index: 3,  icon: <ConfirmationNumberRoundedIcon />, label: 'Shock',            showStateLabel: 'Shock'           },
-   { index: 4,  icon: <CreditCardRoundedIcon />,         label: 'Front Bumper',     showStateLabel: 'FrontBumper'     },
-   { index: 5,  icon: <CallToActionRoundedIcon />,       label: 'Rear Bumper',      showStateLabel: 'RearBumper'      },
-   { index: 6,  icon: <CastConnectedRoundedIcon />,      label: 'Fender',           showStateLabel: 'Fender'          },
-   { index: 7,  icon: <AccountBalanceRoundedIcon />,     label: 'Grille',           showStateLabel: 'Grille'          },
-   { index: 8,  icon: <HighlightRoundedIcon />,          label: 'Headlight',        showStateLabel: 'Headlight'       },
-   { index: 9,  icon: <TableChartRoundedIcon />,         label: 'Hood',             showStateLabel: 'Hood'            },
-   { index: 10, icon: <CalendarTodayRoundedIcon />,      label: 'Bed Cover',        showStateLabel: 'BedCover'        },
-   { index: 11, icon: <EventNoteRoundedIcon />,          label: 'Bed Accessory',    showStateLabel: 'BedAccessory'    },
-   { index: 12, icon: <BlurCircularRoundedIcon />,       label: 'Additional Light', showStateLabel: 'AdditionalLight' },
-   { index: 13, icon: <EventSeatRoundedIcon />,          label: 'Hitch',            showStateLabel: 'Hitch'           }
+   { index: 0, icon: <CameraRoundedIcon />,             label: 'Body',             showStateLabel: 'Body'            },
+   { index: 1,  icon: <CameraRoundedIcon />,             label: 'Wheel',            showStateLabel: 'Wheel'           },
+   { index: 2,  icon: <AlbumRoundedIcon />,              label: 'Tire',             showStateLabel: 'Tire'            },
+   { index: 3,  icon: <AllInboxRoundedIcon />,           label: 'Suspension',       showStateLabel: 'Suspension'      },
+   { index: 4,  icon: <ConfirmationNumberRoundedIcon />, label: 'Shock',            showStateLabel: 'Shock'           },
+   { index: 5,  icon: <CreditCardRoundedIcon />,         label: 'Front Bumper',     showStateLabel: 'FrontBumper'     },
+   { index: 6,  icon: <CallToActionRoundedIcon />,       label: 'Rear Bumper',      showStateLabel: 'RearBumper'      },
+   { index: 7,  icon: <CastConnectedRoundedIcon />,      label: 'Fender',           showStateLabel: 'Fender'          },
+   { index: 8,  icon: <AccountBalanceRoundedIcon />,     label: 'Grille',           showStateLabel: 'Grille'          },
+   { index: 9,  icon: <HighlightRoundedIcon />,          label: 'Headlight',        showStateLabel: 'Headlight'       },
+   { index: 10,  icon: <TableChartRoundedIcon />,         label: 'Hood',             showStateLabel: 'Hood'            },
+   { index: 11, icon: <CalendarTodayRoundedIcon />,      label: 'Bed Cover',        showStateLabel: 'BedCover'        },
+   { index: 12, icon: <EventNoteRoundedIcon />,          label: 'Bed Accessory',    showStateLabel: 'BedAccessory'    },
+   { index: 13, icon: <BlurCircularRoundedIcon />,       label: 'Additional Light', showStateLabel: 'AdditionalLight' },
+   { index: 14, icon: <EventSeatRoundedIcon />,          label: 'Hitch',            showStateLabel: 'Hitch'           }
 ];
 
 const PrettoSlider = withStyles({
@@ -146,6 +147,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
       dispatch(vehicleActions.getPartials(selectedVehicleType));
    }, [dispatch, selectedVehicleType]);
    
+   const bodyData                 = useSelector(state => state.vehicle.bodyData);
    const wheelsData               = useSelector(state => state.vehicle.wheelsData);   
    const tiresData                = useSelector(state => state.vehicle.tiresData);
    const suspensionsData          = useSelector(state => state.vehicle.suspensionsData);
@@ -164,6 +166,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    const wheelsDiametersData      = useSelector(state => state.vehicle.wheelsDiametersData);
    const wheelsWidthsData         = useSelector(state => state.vehicle.wheelsWidthsData);
 
+   const bodyColorData            = useSelector(state => state.vehicle.bodyColorData);
    const wheelsColorData          = useSelector(state => state.vehicle.wheelsColorData);
    const suspensionsColorData     = useSelector(state => state.vehicle.suspensionsColorData);
    const shockColorData           = useSelector(state => state.vehicle.shockColorData);
@@ -181,6 +184,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    const [state, setState] = useState({
       sltedPartialIndex       : 0,
       showContentsBar         : false,      
+      sltedBodyBrand          : '',
       sltedWheelBrand         : '',
       sltedTireModelIndex     : 0,
       sltedWheelDiameterIndex : 0,
@@ -192,6 +196,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    });
    
    const [sltedPartialModel, setSltedPartialModel] = useState({
+      sltedbodyModel           : '',
       sltedwheelModel          : '',
       sltedtireModel           : '',
       sltedsuspensionModel     : '',
@@ -209,6 +214,8 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    });
    
    const [toggleContent, setToggleContent] = useState({
+      showBodyModelContents            : true,
+      showBodyColorContents            : true,
       showWheelModelContents           : true,
       showWheelSizeContents            : true,
       showWheelColorContents           : true,
@@ -242,6 +249,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    });
    
    const [sltedColor, setSltedColor] = useState({
+      sltedBodyColor            : '',
       sltedWheelColor           : '',
       sltedSuspensionColor      : '',
       sltedShockColor           : '',
@@ -263,38 +271,54 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
       }
 
       if (partialIndex === 0) {
+         if (state.sltedBodyBrand !== '') {
+            setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bodyColorData, modelData: null });
+         } else {
+            setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bodyColorData, modelData: null });
+         }
+      } else if (partialIndex === 1) {
          if (state.sltedWheelBrand !== '') {
             setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: wheelsColorData, modelData: wheelsData[state.sltedWheelBrand].paths });
          } else {
             setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: wheelsColorData, modelData: null });
          }
-      } else if (partialIndex === 1) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, modelData: tiresData });
       } else if (partialIndex === 2) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: suspensionsColorData, modelData: suspensionsData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, modelData: tiresData });
       } else if (partialIndex === 3) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: shockColorData, modelData: shockData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: suspensionsColorData, modelData: suspensionsData });
       } else if (partialIndex === 4) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: frontbumperColorData, modelData: frontbumperData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: shockColorData, modelData: shockData });
       } else if (partialIndex === 5) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: rearbumperColorData, modelData: rearbumperData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: frontbumperColorData, modelData: frontbumperData });
       } else if (partialIndex === 6) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: fenderColorData, modelData: fenderData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: rearbumperColorData, modelData: rearbumperData });
       } else if (partialIndex === 7) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: grilleColorData, modelData: grilleData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: fenderColorData, modelData: fenderData });
       } else if (partialIndex === 8) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: headlightColorData, modelData: headlightData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: grilleColorData, modelData: grilleData });
       } else if (partialIndex === 9) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: hoodColorData, modelData: hoodData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: headlightColorData, modelData: headlightData });
       } else if (partialIndex === 10) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bedcoverColorData, modelData: bedcoverData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: hoodColorData, modelData: hoodData });
       } else if (partialIndex === 11) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bedaccessoryColorData, modelData: bedaccessoryData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bedcoverColorData, modelData: bedcoverData });
       } else if (partialIndex === 12) {
-         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: additionallightColorData, modelData: additionallightData });
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bedaccessoryColorData, modelData: bedaccessoryData });
       } else if (partialIndex === 13) {
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: additionallightColorData, modelData: additionallightData });
+      } else if (partialIndex === 14) {
          setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: hitchColorData, modelData: hitchData });
+      } 
+   };
+
+   const sltBodyBrand = event => {
+      if (event.target.value === state.sltedBodyBrand) {
+         return;
       }
+
+      var body = bodyData.filter(body => body.id === event.target.value);
+
+      setState({ ...state, sltedBodyBrand: event.target.value, modelData: body[0].paths });
    };
 
    const sltWheelBrand = event => {
@@ -374,7 +398,12 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
 
    const sltColor = (value, type) => {
 
-      if (type === 'wheel') {
+      if (type === 'body') {
+         if (sltedColor.sltedBodyColor === value) {
+            return;
+         }
+         setSltedColor({ ...sltedColor, sltedBodyColor: value });
+      } else if (type === 'wheel') {
          if (sltedColor.sltedWheelColor === value) {
             return;
          }
@@ -488,7 +517,12 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
 
                         <Grid container className="pt-20" >
                            <Grid item className="ml-20">
-                              <p className="lead">Model</p>
+                              {
+                                 state.sltedPartialIndex === 0 ?
+                                    <p className="lead">Part</p>
+                                 :
+                                    <p className="lead">Model</p>
+                              }
                            </Grid>
                         </Grid>
                         <IconButton onClick={() => toggleContents(`show${partialBar[state.sltedPartialIndex].showStateLabel}ModelContents`)} size="small" className={classes.transitionBtn} >
@@ -497,7 +531,23 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
 
                         <Collapse in={toggleContent[`show${partialBar[state.sltedPartialIndex].showStateLabel}ModelContents`]} className={classes.collapse}>
                            {
-                              state.sltedPartialIndex === 0 && // Brand select for Wheels
+                              state.sltedPartialIndex === 0 && // Brand select for Body
+                              <FormControl variant="outlined" className={classes.formControl}>
+                                 <InputLabel className="outlined-slt-label-sm">Brand</InputLabel>
+                                 <Select
+                                    value={state.sltedBodyBrand}
+                                    onChange={sltBodyBrand}
+                                    labelWidth={42}
+                                    inputProps={{ name: 'sltedBodyBrand' }}
+                                 >
+                                    {bodyData.map((body, index) => (
+                                       <MenuItem key={index} value={body.id}>{body.label}</MenuItem>
+                                    ))}
+                                 </Select>
+                              </FormControl>
+                           }
+                           {
+                              state.sltedPartialIndex === 1 && // Brand select for Wheels
                               <FormControl variant="outlined" className={classes.formControl}>
                                  <InputLabel className="outlined-slt-label-sm">Brand</InputLabel>
                                  <Select
@@ -518,13 +568,13 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                                  {state.modelData.map((model, index, arr) => (
                                     <Grid item xs={6} sm={6} md={6} lg={6} xl={6} key={index}>
                                        {
-                                          state.sltedPartialIndex !== 1 && // if selected partial is Not Tire
+                                          state.sltedPartialIndex !== 2 && // if selected partial is Not Tire
                                           <Button onClick={() => sltPartialModel(model.modelPath, model.modelType)}>
                                              <img src={model.imagePath} alt={`model${index}`} width='100' ></img>
                                           </Button>
                                        }
                                        {
-                                          state.sltedPartialIndex === 1 && // if selected partial is Tire
+                                          state.sltedPartialIndex === 2 && // if selected partial is Tire
                                           <Button onClick={() => sltTireModel(model.modelPath, model.modelType, index)}>
                                              <img src={model.imagePath} alt={`model${index}`} width='100' ></img>
                                           </Button>
@@ -538,7 +588,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                      </Grid>
                      {/* Size Select Section */}
                      {
-                        (state.sltedPartialIndex === 0 || state.sltedPartialIndex === 1 || state.sltedPartialIndex === 2) &&
+                        (state.sltedPartialIndex === 1 || state.sltedPartialIndex === 2 || state.sltedPartialIndex === 3) &&
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                            <Divider variant="middle" />
                            <Grid container className="pt-20" >
@@ -552,7 +602,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
 
                            <Collapse in={toggleContent[`show${partialBar[state.sltedPartialIndex].showStateLabel}SizeContents`]} className={classes.collapse}>
                               {
-                                 state.sltedPartialIndex === 0 && // if selected partial is Wheel
+                                 state.sltedPartialIndex === 1 && // if selected partial is Wheel
                                  <Grid container justify='center' className="mb-15">
                                     <Grid item style={{ width: 100 }} className="mr-10">
                                        <FormControl variant="outlined" className={classes.sizeForm}>
@@ -591,7 +641,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                                  </Grid>
                               }
                               {
-                                 state.sltedPartialIndex === 1 && // if selected partial is Tire
+                                 state.sltedPartialIndex === 2 && // if selected partial is Tire
                                  <Grid container justify='center' className="mb-15">
                                     <Grid item>
                                        <p className="lead" style={{ fontSize: '1rem' }}>Diameter : {parseInt(state.sltedTireDiameter)}"</p>
@@ -599,7 +649,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                                  </Grid>
                               }
                               {
-                                 state.sltedPartialIndex === 2 && // if selected partial is Suspension
+                                 state.sltedPartialIndex === 3 && // if selected partial is Suspension
                                  <Grid container justify='center' alignItems='center' className="mb-10">
                                     <Grid item style={{ width: 220 }}>
                                        <PrettoSlider
@@ -618,7 +668,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                      }
                      {/* Color Select Section */}
                      {
-                        state.sltedPartialIndex !== 1 && // if selected partial is not Tire
+                        state.sltedPartialIndex !== 2 && // if selected partial is not Tire
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                            <Divider variant="middle" />
                            <Grid container className="pt-20" >
