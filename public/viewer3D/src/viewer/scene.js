@@ -16,9 +16,9 @@ function ModelScene(envData, vehicleModel) {
     this.renderer.gammaOutput = true;
     this.renderer.gammaFactor = 2.2;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
-
+    // options are THREE.BasicShadowMap | THREE.PCFShadowMap | THREE.PCFSoftShadowMap
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // Env texture
     var cubeGenerator = new THREE.EquirectangularToCubeGenerator(this.envData.textures.env, { resolution: 1024 });
@@ -35,7 +35,7 @@ function ModelScene(envData, vehicleModel) {
     //Add event
     this.container.append(this.renderer.domElement);
     this.renderer.domElement.mySelf = this;
-    this.renderer.domElement.addEventListener('resize', this.onResize, true);
+    this.renderer.domElement.addEventListener('resize', this.onResize, false);
     this.renderer.domElement.addEventListener('mousedown', this.onMouseDown, false);
     this.renderer.domElement.addEventListener('mousemove', this.onMouseMove, false);
     this.renderer.domElement.addEventListener('mouseup', this.onMouseUp, false);
@@ -46,68 +46,34 @@ function ModelScene(envData, vehicleModel) {
     this.renderer.domElement.addEventListener('click', this.onClick, false);
 
     // Camera
-    this.camera = new THREE.PerspectiveCamera(60, this.screenRatio, 0.01, 100);
-
-    // Cube Camera
-    this.cubeCameraCnt = 0;
-    this.cubeCamera1 = new THREE.CubeCamera(1, 1000, 256);
-    this.cubeCamera1.renderTarget.texture.generateMipmaps = true;
-    this.cubeCamera1.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-
-    this.cubeCamera2 = new THREE.CubeCamera(1, 1000, 256);
-    this.cubeCamera2.renderTarget.texture.generateMipmaps = true;
-    this.cubeCamera2.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-
+    this.camera = new THREE.PerspectiveCamera(46, this.screenRatio, 0.01, 100);
 
     // Camera controller
     this.cameraCtrl = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     // this.cameraCtrl.enablePan = false;
     this.cameraCtrl.enableDamping = true;
     this.cameraCtrl.screenSpacePanning = true;
-    // this.cameraCtrl.dampingFactor = 0.12;
-    // this.cameraCtrl.minDistance = 0;
-    // this.cameraCtrl.maxDistance = 7;
+    this.cameraCtrl.dampingFactor = 0.12;
+    this.cameraCtrl.minDistance = 0;
+    this.cameraCtrl.maxDistance = 4.5;
     this.cameraCtrl.rotateSpeed = 0.1
     this.cameraCtrl.panSpeed = 0.1;
-    // this.cameraCtrl.minPolarAngle = Math.PI / 20;
-    // this.cameraCtrl.maxPolarAngle = Math.PI / 2 - Math.PI / 20;
+    this.cameraCtrl.minPolarAngle = Math.PI / 50;
+    this.cameraCtrl.maxPolarAngle = Math.PI / 2 - Math.PI / 50;
 
 
     //Add color picker
-    this.selectedBodyPart = null;
-    g_ColorPicker = document.createElement('div');
-    g_ColorPicker.id = 'colorPickerWidget';
-    g_CanvasContainer.append(g_ColorPicker);
-    g_ColorPicker = $(g_ColorPicker);
-
-    var self = this;
-    g_ColorPicker.click(function () {
-        var color = "#" + $(this).colorwheel('value');
-        var selectedObject = self.selectedBodyPart;
-
-        if (selectedObject !== null) {
-            for (var i = 0; i < selectedObject.children.length; i++) {
-                let mesh = selectedObject.children[i];
-                if (mesh.material.name === selectedObject.name.replace('_paint_', '').replace('&','')) {
-                    mesh.material.color.set(parseInt(color.replace('#', '0x')));
-                }
-            }
-        }
-
-    });
-
-
 
     this.init();
 }
 
 ModelScene.prototype.init = function () {
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xffffff);
+    this.scene.background = new THREE.Color(0xa0a0a0);
+    this.scene.fog = new THREE.Fog(0xa0a0a0, 10, 22);
+
 
     this.scene.add(this.camera);
-    this.scene.add(this.cubeCamera1);
-    this.scene.add(this.cubeCamera2);
 
     // var gridHelper = new THREE.GridHelper(10, 10, 0xffff00, 0xff00ff);
     // gridHelper.material.opacity = 0.3;
@@ -118,112 +84,52 @@ ModelScene.prototype.init = function () {
     // this.scene.add(axisHelper);
 
 
-
-
     //Light
-    var ambient = new THREE.AmbientLight(0x444444);
-    this.scene.add(ambient);
-    light = new THREE.SpotLight(0xffffff, 1, 0, Math.PI / 5, 0.3);
-    light.position.set(0, 5, 1);
-    light.target.position.set(0, -4, 0);
-    light.castShadow = true;
-    light.shadow.camera.near = 0.1;
-    light.shadow.camera.far = 10;
-    light.shadow.bias = 0.0001;
-    light.shadow.mapSize.width = 2048;
-    light.shadow.mapSize.height = 1024;
-    this.scene.add(light);
+    var hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5);
+    hemiLight.position.set(0, 20, 0);
+    this.scene.add(hemiLight);
+
+    var dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(1, 10, 0);
+    dirLight.castShadow = true;
+    dirLight.shadow.camera.top = 10;
+    dirLight.shadow.camera.bottom = - 10;
+    dirLight.shadow.camera.left = - 10;
+    dirLight.shadow.camera.right = 10;
+    dirLight.shadow.camera.near = 0.1;
+    dirLight.shadow.camera.far = 40;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    this.scene.add(dirLight);
+
+    // ground
+    var groundMesh = new THREE.Mesh(
+        new THREE.PlaneBufferGeometry(40, 40),
+        new THREE.MeshPhongMaterial({
+            color: 0x999999,
+            depthWrite: false
+        })
+    );
+    groundMesh.rotation.x = - Math.PI / 2;
+    groundMesh.receiveShadow = true;
+    this.scene.add(groundMesh);
 
 
     //Camera controller
     this.cameraCtrl.target = new THREE.Vector3(0, -3, 0);
     this.camera.position.set(-4, 2.5, -4);
 
-    //Init environment scene
-    if (this.envData.name === 'scene_00') {
-        this.scene.add(this.envData.model);
-
-        this.shinyMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                bumpiness: { type: 'f', value: 1 },
-                repeatUV: { type: 'v2', value: new THREE.Vector2(1, 1) },
-                diffuseMap: { type: 't', value: this.envData.textures.diffuse },
-                specularMap: { type: 't', value: this.envData.textures.specular },
-                normalMap: { type: 't', value: this.envData.textures.normal },
-                detailNormalMap: { type: 't', value: this.envData.textures.displacement },
-                envMap: { type: 't', value: this.cubeCamera2.renderTarget.texture },
-                specular: { type: 'f', value: 0 },
-                roughness: { type: 'f', value: 2 },
-                cubeMapSize: { type: 'v3', value: new THREE.Vector3(1, 1, 1) }
-            },
-            vertexShader: this.envData.shaderContainers.reflectVert,
-            fragmentShader: this.envData.shaderContainers.reflectFrag,
-            side: THREE.FrontSide
-        });
-
-        this.shinyMaterial.uniforms.normalMap.value.wrapS =
-            this.shinyMaterial.uniforms.normalMap.value.wrapT =
-            this.shinyMaterial.uniforms.detailNormalMap.value.wrapS =
-            this.shinyMaterial.uniforms.detailNormalMap.value.wrapT =
-            this.shinyMaterial.uniforms.diffuseMap.value.wrapS =
-            this.shinyMaterial.uniforms.diffuseMap.value.wrapT =
-            this.shinyMaterial.uniforms.specularMap.value.wrapS =
-            this.shinyMaterial.uniforms.specularMap.value.wrapT =
-            THREE.RepeatWrapping;
-
-
-
-        let self = this;
-        this.envData.model.children.forEach(function (e) {
-            e.geometry.center();
-
-            var indices_array = [];
-            for (var j = 0; j < e.geometry.attributes.position.array.length / 3; j++) {
-                indices_array.push(j);
-            }
-
-            e.geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(indices_array), 1));
-
-            THREE.BufferGeometryUtils.computeTangents(e.geometry);
-            var t = e.geometry.boundingBox.max.clone();
-            t.sub(e.geometry.boundingBox.min);
-            var scale = 8 / t.y;
-            e.scale.set(scale, scale, scale);
-            e.material = self.shinyMaterial;
-            t.multiply(e.scale);
-            e.material.uniforms.cubeMapSize.value.copy(t);
-
-            self.envData.mesh = e;
-        });
-
-        //Floor
-        var floorGeo = new THREE.PlaneGeometry(25, 40, 1);
-        this.envData.textures.floor.wrapS = THREE.RepeatWrapping;
-        this.envData.textures.floor.wrapT = THREE.RepeatWrapping;
-        this.envData.textures.floor.repeat.set(6, 9);
-
-        var floorMat = new THREE.MeshPhongMaterial({
-            map: this.envData.textures.floor,
-            shininess: 0,
-            reflectivity: 0
-        });
-
-        this.floor = new THREE.Mesh(floorGeo, floorMat);
-        this.floor.rotation.set(-Math.PI / 2, 0, 0);
-        this.floor.position.set(0, -4, 0);
-        this.floor.castShadow = false;
-        this.floor.receiveShadow = true;
-        this.scene.add(this.floor);
-    }
 
     //Init vehicle
     this.vehicleModel.name = "vehicle_root";
-    this.vehicleModelInitPos = new THREE.Vector3(0, -4, 0);
+    this.vehicleModelInitPos = new THREE.Vector3(0, 0, 0);
     this.vehicleModel.position.set(this.vehicleModelInitPos.x, this.vehicleModelInitPos.y, this.vehicleModelInitPos.z);
-    this.vehicleModel.rotation.set(0, Math.PI / 5, 0);
+    this.vehicleModel.rotation.set(0, Math.PI / 12, 0);
     this.vehicleModel.scale.set(1.2, 1.2, 1.2);
     this.scene.add(this.vehicleModel);
 
+    //Set camera
+    this.fitCameraToObject(this.camera, this.vehicleModel, 3, this.cameraCtrl);
 
     //Wheel
     this.wheels = [];
@@ -244,8 +150,57 @@ ModelScene.prototype.init = function () {
     this.suspensionColor = null;
 
     //Body color 
-    this.paintObjects = [];
-    this.paintTargets = [];
+    this.bodyParts = [];
+    this.bodyTargets = [];
+    this.bodyGlass = null;
+
+    //Shock
+    this.shock = null;
+    this.shockColor = null;
+
+    //Frontbumper
+    this.frontBumper = null;
+    this.frontBumperColor = null;
+
+    //Rearbumper
+    this.rearBumper = null;
+    this.rearBumperColor = null;
+
+    //Fender
+    this.fender = null;
+    this.fenderColor = null;
+
+    //Grille
+    this.grille = null;
+    this.grilleColor = null;
+
+    //Grille
+    this.grille = null;
+    this.grilleColor = null;
+
+    //HeadLight
+    this.headLight = null;
+    this.headLightColor = null;
+
+    //Hood
+    this.hood = null;
+    this.hoodColor = null;
+
+    //BedCover
+    this.bedCover = null;
+    this.bedCoverColor = null;
+
+    //BedAccessory
+    this.bedAccessory = null;
+    this.bedAccessoryColor = null;
+
+    //AdditionalLight
+    this.additionalLight = null;
+    this.additionalLightColor = null;
+
+    //BedAccessory
+    this.hitch = null;
+    this.hitchColor = null;
 
     for (var i = 0; i < this.vehicleModel.children.length; i++) {
 
@@ -274,14 +229,81 @@ ModelScene.prototype.init = function () {
             this.suspension = partialModel;
         }
 
-        //Add paint object
+        //Add shock
+        if (partialModel.name.includes("Shock")) {
+            this.shock = partialModel;
+        }
+
+        //Add frontBumper
+        if (partialModel.name.includes("FrontBumper")) {
+            this.frontBumper = partialModel;
+        }
+
+        //Add rearBumper
+        if (partialModel.name.includes("RearBumper")) {
+            this.rearBumper = partialModel;
+        }
+
+        //Add fender
+        if (partialModel.name.includes("Fender")) {
+            this.fender = partialModel;
+        }
+
+        //Add grille
+        if (partialModel.name.includes("Grille")) {
+            this.grille = partialModel;
+        }
+
+        //Add headLight
+        if (partialModel.name.includes("HeadLight")) {
+            this.headLight = partialModel;
+        }
+
+        //Add hood
+        if (partialModel.name.includes("Hood")) {
+            this.hood = partialModel;
+        }
+
+        //Add bedCover
+        if (partialModel.name.includes("BedCover")) {
+            this.bedCover = partialModel;
+        }
+
+        //Add bedAccessory
+        if (partialModel.name.includes("BedAccessory")) {
+            this.bedAccessory = partialModel;
+        }
+
+        //Add additionalLight
+        if (partialModel.name.includes("AdditionalLight")) {
+            this.additionalLight = partialModel;
+        }
+
+        //Add hitch
+        if (partialModel.name.includes("Hitch")) {
+            this.hitch = partialModel;
+        }
+
+        //Add body
         if (partialModel.name.includes("_paint")) {
             var name = partialModel.name;
             name = name.split("_");
             partialModel.partName = (name[name.length - 1]).replace('&', ' ');
 
-            this.paintTargets.push(new PaintTarget(this, partialModel));
-            this.paintObjects.push(partialModel);
+            this.bodyTargets.push(new PaintTarget(this, partialModel));
+            this.bodyParts.push(partialModel);
+
+            //Body glass
+            if (partialModel.partName === "Body Glass") {
+                this.bodyGlass = partialModel;
+                var self = this;
+                this.bodyGlass.traverse(function (child) {
+                    if (child.isMesh) {
+                        self.bodyGlassOpacity = child.material.opacity;
+                    }
+
+                })
+            }
         }
 
     }
@@ -296,36 +318,15 @@ ModelScene.prototype.init = function () {
 ModelScene.prototype.update = function () {
 
     //update the position of Color picker 
-    for (var i = 0; i < this.paintTargets.length; i++) {
-        this.paintTargets[i].updatePosition(this.camera);
+    for (var i = 0; i < this.bodyTargets.length; i++) {
+        this.bodyTargets[i].updatePosition(this.camera);
     }
 
-
-    if (this.cubeCameraCnt % 2 === 0) {
-
-        //Update envMap for Environment
-        this.envData.mesh.material.uniforms.envMap.value = this.cubeCamera1.renderTarget.texture;
-
-        this.cubeCamera2.update(this.renderer, this.scene);
-
-    } else {
-
-        //Update envMap for Environment
-        this.envData.mesh.material.uniforms.envMap.value = this.cubeCamera2.renderTarget.texture;
-
-        this.cubeCamera1.update(this.renderer, this.scene);
-
-    }
-
-    this.cubeCameraCnt++;
 
     this.cameraCtrl.update();
 
     // this.renderer.render(this.scene, this.camera);
     this.updatePostprocessing();
-
-
-
 
 }
 
@@ -395,7 +396,7 @@ ModelScene.prototype.initPostprocessing = function () {
     const vignetteEffect = new POSTPROCESSING.VignetteEffect({
         eskil: false,
         offset: 0.05,
-        darkness: 0.7
+        darkness: 0.5
     });
 
     const brightnessContrastEffect = new POSTPROCESSING.BrightnessContrastEffect({ contrast: 0.04, brightness: 0 });
@@ -424,7 +425,7 @@ ModelScene.prototype.initPostprocessing = function () {
 
     const effectPass = new POSTPROCESSING.EffectPass(
         this.camera,
-        new POSTPROCESSING.BloomEffect(),
+        // new POSTPROCESSING.BloomEffect(),
         smaaEffect,
         vignetteEffect,
         brightnessContrastEffect,
@@ -630,13 +631,16 @@ ModelScene.prototype.setModelColor = function (color, partialModelType) {
         return;
     }
 
+    var self = this;
+
+    console.log(color, partialModelType);
     switch (partialModelType) {
         case 'wheel':
             for (var i = 0; i < this.wheels.length; i++) {
                 for (var j = 0; j < this.wheels[i].children.length; j++) {
                     let mesh = this.wheels[i].children[j];
                     if (mesh.name.includes('main')) {
-                        mesh.material.color.set(parseInt(color.replace('#', '0x')));
+                        this.fadeMeshColor(mesh, color);
                     }
                 }
 
@@ -644,13 +648,133 @@ ModelScene.prototype.setModelColor = function (color, partialModelType) {
             this.wheelColor = color;
             break;
         case 'suspension':
-            for (var i = 0; i < this.suspension.children.length; i++) {
-                let mesh = this.suspension.children[i];
-                if (mesh.name.includes('body') || mesh.name.includes('main')) {
-                    mesh.material.color.set(parseInt(color.replace('#', '0x')));
+            if (this.suspension !== null) {
+                for (var i = 0; i < this.suspension.children.length; i++) {
+                    let mesh = this.suspension.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
                 }
+                this.suspensionColor = color;
             }
-            this.suspensionColor = color;
+            break;
+        case 'shock':
+            if (this.shock !== null) {
+                for (var i = 0; i < this.shock.children.length; i++) {
+                    let mesh = this.shock.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.shockColor = color;
+            }
+            break;
+        case 'frontbumper':
+            if (this.frontBumper !== null) {
+                for (var i = 0; i < this.frontBumper.children.length; i++) {
+                    let mesh = this.frontBumper.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.frontBumperColor = color;
+            }
+            break;
+        case 'rearbumper':
+            if (this.rearBumper !== null) {
+                for (var i = 0; i < this.rearBumper.children.length; i++) {
+                    let mesh = this.rearBumper.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.rearBumperColor = color;
+            }
+            break;
+        case 'fender':
+            if (this.fender !== null) {
+                this.fender.traverse(function (child) {
+                    if (child.isMesh) {
+                        self.fadeMeshColor(child, color);
+                    }
+                })
+                this.fenderColor = color;
+            }
+            break;
+        case 'grille':
+            if (this.grille !== null) {
+                for (var i = 0; i < this.grille.children.length; i++) {
+                    let mesh = this.grille.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.grilleColor = color;
+            }
+            break;
+        case 'headlight':
+            if (this.headLight !== null) {
+                for (var i = 0; i < this.headLight.children.length; i++) {
+                    let mesh = this.headLight.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.headLightColor = color;
+            }
+            break;
+        case 'hood':
+            if (this.hood !== null) {
+                this.hood.traverse(function (child) {
+                    if (child.isMesh) {
+                        self.fadeMeshColor(child, color);
+                    }
+                })
+                this.hoodColor = color;
+            }
+            break;
+        case 'bedcover':
+            if (this.bedCover !== null) {
+                this.bedCover.traverse(function (child) {
+                    if (child.isMesh) {
+                        self.fadeMeshColor(child, color);
+                    }
+                })
+                this.bedCoverColor = color;
+            }
+            break;
+        case 'bedaccessory':
+            if (this.bedAccessory !== null) {
+                for (var i = 0; i < this.bedAccessory.children.length; i++) {
+                    let mesh = this.bedAccessory.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.bedAccessoryColor = color;
+            }
+            break;
+        case 'additionallight':
+            if (this.additionalLight !== null) {
+                for (var i = 0; i < this.additionalLight.children.length; i++) {
+                    let mesh = this.additionalLight.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.additionalLightColor = color;
+            }
+            break;
+        case 'hitch':
+            if (this.hitch !== null) {
+                for (var i = 0; i < this.hitch.children.length; i++) {
+                    let mesh = this.hitch.children[i];
+                    if (mesh.name.includes('body') || mesh.name.includes('main')) {
+                        this.fadeMeshColor(mesh, color);
+                    }
+                }
+                this.hitchColor = color;
+            }
             break;
         default:
             break;
@@ -681,4 +805,119 @@ ModelScene.prototype.setSuspensionSize = function (size) {
 
     this.suspensionSize = currentSize;
 
+}
+
+ModelScene.prototype.setBodyColor = function (color, partName) {
+    if (color === null) {
+        return;
+    }
+
+    for (var i = 0; i < this.bodyParts.length; i++) {
+        if (partName === this.bodyParts[i].partName) {
+            this.fadeMeshColor(this.bodyParts[i], color);
+            break;
+        }
+    }
+
+}
+
+ModelScene.prototype.setOpacityBodyGlass = function (val) {
+    if (this.bodyGlass === null)
+        return;
+
+    var opacity = this.bodyGlassOpacity + val / 100;
+
+    this.bodyGlass.traverse(function (child) {
+        if (child.isMesh) {
+            child.material.opacity = opacity;
+        }
+    })
+}
+
+ModelScene.prototype.showBodyAnnotation = function (partName) {
+    for (var i = 0; i < this.bodyTargets.length; i++) {
+        if (this.bodyTargets[i].partName === partName) {
+            this.bodyTargets[i].fadeShow();
+        }
+    }
+}
+
+ModelScene.prototype.showAllBodyAnnotation = function () {
+    this.bodyTargets.forEach(function (t) {
+        t.fadeShow();
+    })
+}
+
+ModelScene.prototype.hideAllBodyAnnotation = function () {
+    this.bodyTargets.forEach(function (t) {
+        t.fadeHide();
+    })
+}
+
+ModelScene.prototype.fadeMeshColor = function (object, color) {
+
+    var c = new THREE.Color(color);
+
+    object.traverse(function (child) {
+        if (child.isMesh) {
+            TweenMax.to(child.material.color, 0.8, {
+                ease: Sine.easeInOut,
+                r: c.r,
+                g: c.g,
+                b: c.b
+            });
+        }
+    })
+
+
+}
+
+ModelScene.prototype.fitCameraToObject = function (camera, object, offset, controls) {
+
+    offset = offset || 1.25;
+
+    const boundingBox = new THREE.Box3();
+
+    // get bounding box of object - this will be used to setup controls and camera
+    boundingBox.setFromObject(object);
+
+    const center = new THREE.Vector3();
+
+    boundingBox.getCenter(center);
+
+    const size = new THREE.Vector3();
+    boundingBox.getSize(size);
+
+    // get the max side of the bounding box (fits to width OR height as needed )
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    const fov = camera.fov * (Math.PI / 180);
+
+    var cameraZ = Math.abs(maxDim / 4);
+
+    cameraZ *= offset; // zoom out a little so that objects don't fill the screen
+
+    camera.position.z = cameraZ;
+
+    const minZ = boundingBox.min.z;
+    const cameraToFarEdge = (minZ < 0) ? -minZ + cameraZ : cameraZ - minZ;
+
+    camera.far = cameraToFarEdge * 3;
+    camera.updateProjectionMatrix();
+
+    if (controls) {
+
+        // set camera to rotate around center of loaded object
+        controls.target = center;
+
+        // prevent camera from zooming out far enough to create far plane cutoff
+        controls.maxDistance = cameraToFarEdge * 2;
+
+        controls.saveState();
+
+    } else {
+
+        camera.lookAt(center)
+
+    }
 }

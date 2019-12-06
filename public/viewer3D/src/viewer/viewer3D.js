@@ -5,7 +5,6 @@ var g_clock;
 
 var g_CanvasContainer;
 var g_LoadingContainer;
-var g_ColorPicker;
 
 function Viewer3D() {
   g_clock = new THREE.Clock();
@@ -14,13 +13,13 @@ function Viewer3D() {
   //loading
   g_LoadingContainer = $('#loading-container');
 
-  
+
 
   this.assetLoader = new AssetLoader();
 }
 
-Viewer3D.prototype.loadEnvAndVehicleAsset = function (url) {
-  this.assetLoader.loadEnvAndVehicle(url);
+Viewer3D.prototype.loadEnvAndVehicleAsset = function (url, callback) {
+  this.assetLoader.loadEnvAndVehicle(url, callback);
 }
 
 Viewer3D.prototype.loadPartialAsset = function (url, type) {
@@ -43,4 +42,18 @@ Viewer3D.prototype.setModelColor = function (color, modelType) {
   this.assetLoader.modelScene.setModelColor(color, modelType);
 }
 
+Viewer3D.prototype.setBodyColor = function (color, modelType) {
+  this.assetLoader.modelScene.setBodyColor(color, modelType);
+}
 
+Viewer3D.prototype.setOpacityBodyGlass = function (val) {
+  this.assetLoader.modelScene.setOpacityBodyGlass(val);
+}
+
+Viewer3D.prototype.showAllBodyAnnotation = function () {
+  this.assetLoader.modelScene.showAllBodyAnnotation();
+}
+
+Viewer3D.prototype.hideAllBodyAnnotation = function () {
+  this.assetLoader.modelScene.hideAllBodyAnnotation();
+}

@@ -3,19 +3,22 @@
  * Header menu component
  */
 import React, { Fragment } from 'react';
+import { useDispatch, useSelector }   from 'react-redux';
 import { Link } from 'react-router-dom';
 import classnames from "classnames";
-import { connect } from 'react-redux';
 
 import * as vehicleActions from '../../../store/actions/vehicle';
 
 // intl messages
 import IntlMessages from '../../../utils/IntlMessages';
 
-// nav links
-import navLinks from '../../../assets/data/NavLinks';
+const areEqual = (prevProps, nextProps) => true;
 
 function HeaderMenu(props) {
+
+   const dispatch = useDispatch();
+   const navLinks = useSelector(state => state.vehicle.navLinks);
+
    return (
       <div className="horizontal-menu">
          <ul className="d-inline-block iron-header-menu mb-0">
@@ -70,7 +73,13 @@ function HeaderMenu(props) {
                                           <ul className="mb-0">
                                              {navLink.child_routes[subNavLink].map((megaMenuItem, index) => (
                                                 <li key={index}>
-                                                   <Link to={megaMenuItem.path} className="text-capitalize brand-hover" onClick={() => {props.selectBrand(megaMenuItem.brand_name)}}>
+                                                   <Link 
+                                                      to={megaMenuItem.path} 
+                                                      className="text-capitalize brand-hover" 
+                                                      onClick={() => {
+                                                         dispatch(vehicleActions.selectBrand(megaMenuItem.brand_name))
+                                                      }}
+                                                   >
                                                       <img 
                                                          src={require(`../../../assets/images/brands/${megaMenuItem.brand_logo}.png`)} 
                                                          alt='brand-logo' 
@@ -102,8 +111,4 @@ function HeaderMenu(props) {
    );
 }
 
-const mapDispatchToProps = {
-   selectBrand: vehicleActions.selectBrand
- }
- 
- export default connect(null, mapDispatchToProps)(HeaderMenu);
+export default React.memo(HeaderMenu, areEqual);

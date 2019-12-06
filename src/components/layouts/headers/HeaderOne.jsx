@@ -16,6 +16,8 @@ import SidebarMenu from '../sidebar';
 import FixedHeader from '../headers/FixedHeader';
 import AppConfig from '../../../config/AppConfig';
 
+import * as vehicleActions from '../../../store/actions/vehicle';
+
 class HeaderOne extends React.Component {
 
    state = {
@@ -24,6 +26,8 @@ class HeaderOne extends React.Component {
 
    UNSAFE_componentWillMount() {
       window.addEventListener('scroll', this.hideBar);
+      
+      this.props.getBrands();
    }
 
    UNSAFE_componentWillUnmount() {
@@ -84,8 +88,13 @@ class HeaderOne extends React.Component {
    }
 }
 
-export default connect(   
-   state => ({
-      isLoggedIn: state.auth.token ? true : false
-   })
-)(HeaderOne);
+// map state to props
+const mapStateToProps = state => ({
+   isLoggedIn: state.auth.token ? true : false
+})
+
+const mapDispatchToProps = {
+   getBrands: vehicleActions.getBrands
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderOne);

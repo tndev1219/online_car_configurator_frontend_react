@@ -83,29 +83,50 @@ function AssetLoader() {
 	this.loadModelType = "";
 }
 
-AssetLoader.prototype.loadEnvAndVehicle = function (url) {
-	this.loadEnvModel();
-	this.loadGLTFZip(url, 'Vehicle');
+AssetLoader.prototype.loadEnvAndVehicle = function (url, callback) {
 	this.loadEnvMap();
+	this.loadGLTFZip(url, 'Vehicle', callback);
 }
 
-AssetLoader.prototype.loadGLTF = function (url) {
+AssetLoader.prototype.loadGLTF = function (url, callback) {
 	var self = this;
-
 
 	this.gltfLoader.load(url, function (model) {
 		if (self.vehicleLoad) {
 			self.vehicleModel = model.scene.children[0].children[0].children[0].children[0];
+
+			//------------------------------------------------------------------------------------------------------------------------------------
+			//Parse Vehicle Model
+			//------------------------------------------------------------------------------------------------------------------------------------
+
+			//body
+			var bodyPartNames = [];
+			for (var i = 0; i < self.vehicleModel.children.length; i++) {
+				var child = self.vehicleModel.children[i];
+				if (child.name.includes("_paint")) {
+					var name = child.name;
+					name = name.split("_");
+					var partName = (name[name.length - 1]).replace('&', ' ');
+					bodyPartNames.push(partName);
+				}
+			}
+
+
+			//callback for body part
+			callback(null, bodyPartNames);
+
 		}
 		else {
 			self.partialModel = model.scene.children[0].children[0].children[0].children[0].children[0];
 			self.isEndLoadingGltfForPartial = true;
+
+
 		}
 		self.isEndLoading = true;
 	});
 }
 
-AssetLoader.prototype.loadGLTFZip = function (url, type) {
+AssetLoader.prototype.loadGLTFZip = function (url, type, callback) {
 	var self = this;
 
 	this.loadModelType = type;
@@ -130,37 +151,10 @@ AssetLoader.prototype.loadGLTFZip = function (url, type) {
 
 	}).then(function (file) {
 
-		self.loadGLTF(file);
+		self.loadGLTF(file, callback);
 
 	});
 }
-
-AssetLoader.prototype.loadEnvModel = function () {
-	var self = this;
-	var envPath = "viewer3D/models/env/"
-
-	//Load environment Scene_00
-	envPath += this.envData.name;
-	if (this.envData.name === "scene_00") {
-		this.textureLoader.load(envPath + '/' + 'diffuse.jpg', function (t) { self.envData.textures.diffuse = t; });
-		this.textureLoader.load(envPath + '/' + 'specular.jpg', function (t) { self.envData.textures.specular = t; });
-		this.textureLoader.load(envPath + '/' + 'normal.jpg', function (t) { self.envData.textures.normal = t; });
-		this.textureLoader.load(envPath + '/' + 'displacement.jpg', function (t) { self.envData.textures.displacement = t; });
-		this.textureLoader.load(envPath + '/' + 'floor.jpg', function (t) { self.envData.textures.floor = t; });
-		this.textureLoader.load(envPath + '/' + 'floor_normal.jpg', function (t) { self.envData.textures.floor_normal = t; });
-
-		this.objLoader.load(envPath + '/hall.obj', function (model) {
-			self.envData.model = model;
-		});
-	}
-	else if (this.envData.name === "scene_04") {
-		this.gltfLoader.load(envPath + '/' + 'Scene_04.gltf', function (model) {
-			self.envData.model = model.scene.children[0];
-		});
-	}
-
-}
-
 
 AssetLoader.prototype.loadEnvMap = function () {
 	var self = this;

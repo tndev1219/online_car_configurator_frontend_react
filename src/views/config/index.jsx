@@ -11,11 +11,14 @@ import VerticalTabs from '../../components/UI/Toolbar';
 // Redux
 import * as authActions from '../../store/actions/auth';
 import * as appSettingActions from '../../store/actions/appSetting';
+import appConfig from '../../config/AppConfig';
 
 class Config extends React.Component {
    constructor(props) {
       super(props);
-      this.state = {};
+      this.state = {
+         bodyPartOptions: []
+      };
       this.viewer3D = null;
    }
 
@@ -25,16 +28,23 @@ class Config extends React.Component {
          this.props.history.push('/vehicles');
       } else {
          this.viewer3D = new window.Viewer3D();
-   
+
          var vehicleModelURL = this.props.selectedModel;
-         this.viewer3D.loadEnvAndVehicleAsset(vehicleModelURL);
-   
+
+         var self = this;
+
+         this.viewer3D.loadEnvAndVehicleAsset(`${appConfig.serverURL}${vehicleModelURL}`, function (err, res) {
+            if (res.length) {
+               self.setState({ bodyPartOptions: res });
+            }
+         });
+
          window.viewer3D = this.viewer3D;
       }
    }
 
    changePartials = (path, type) => {
-      window.viewer3D.loadPartialAsset(path, type);
+      window.viewer3D.loadPartialAsset(`${appConfig.serverURL}${path}`, type);
    }
 
    changeWheelSize = (diameter, width) => {
@@ -53,7 +63,24 @@ class Config extends React.Component {
       window.viewer3D.setModelColor(value, modelType);
    };
 
+   changeBodyPartColor = (value, bodyPart) => {
+      window.viewer3D.setBodyColor(value, bodyPart);
+   };
+
+   changeBodyGlassOpacity = (value) => {
+      window.viewer3D.setOpacityBodyGlass(value);
+   };
+
+   showAllBodyAnnotation = () => {
+      window.viewer3D.showAllBodyAnnotation();
+   };
+
+   hideAllBodyAnnotation = () => {
+      window.viewer3D.hideAllBodyAnnotation();
+   };
+
    render() {
+
       return (
          <div className="iron-sign-in-page-wrap" style={{ height: '100vh' }}>
             <Helmet>
@@ -67,6 +94,11 @@ class Config extends React.Component {
                      changeColor={this.changeColor}
                      changeTireSize={this.changeTireSize}
                      changeSuspensionSize={this.changeSuspensionSize}
+                     changeBodyPartColor={this.changeBodyPartColor}
+                     changeBodyGlassOpacity={this.changeBodyGlassOpacity}
+                     bodyPartOptions={this.state.bodyPartOptions}
+                     showAllBodyAnnotation={this.showAllBodyAnnotation}
+                     hideAllBodyAnnotation={this.hideAllBodyAnnotation}
                   />
                </Grid>
                <Grid item>

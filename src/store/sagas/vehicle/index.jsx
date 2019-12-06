@@ -36,6 +36,37 @@ export function* getVehicles() {
    });
 }
 
+export function* getBrands() {
+   yield takeEvery(vehicleTypes.GET_BRANDS, function* () {
+      try {
+         const res = yield call(api.POST, 'getBrands');
+
+         if (res.data.success) {
+            yield put({
+               type: vehicleTypes.GET_BRANDS_SUCCESS,
+               payload: res.data.result
+            });            
+         } else {
+            yield put({
+               type: appSettingTypes.SHOW_ALERT,
+               payload: {
+                  message: res.data.message,
+                  alertType: 'error'
+               }
+            });
+         }
+      } catch (err) {
+         yield put({
+            type: appSettingTypes.SHOW_ALERT,
+            payload: {
+               message: "Failed to Get Registered Vehicles Brand Data. Please try again later...",
+               alertType: 'error'
+            }
+         });
+      }
+   });
+}
+
 export function* getPartials() {
    yield takeEvery(vehicleTypes.GET_PARTIALS, function* (payload) {
       try {
@@ -70,6 +101,7 @@ export function* getPartials() {
 export default function* rootSaga() {
    yield all([
       fork(getVehicles),
+      fork(getBrands),
       fork(getPartials)
    ]);
 }

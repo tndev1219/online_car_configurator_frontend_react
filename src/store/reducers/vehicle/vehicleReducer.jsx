@@ -2,52 +2,17 @@ import {
    SELECT_BRAND,
    SELECT_MODEL,
    GET_VEHICLES_SUCCESS,
-   GET_PARTIALS_SUCCESS
+   GET_PARTIALS_SUCCESS,
+   GET_BRANDS_SUCCESS
 } from '../../actions/vehicle/vehicleTypes';
+import navLinks from '../../..//assets/data/NavLinks';
 
 const initState = {
-   selectedBrand: 'menu.abarth',
+   selectedBrand: '',
+   navLinks: [],
    selectedModel: '',
    selectedVehicleType: '',
    vehiclesData: [],
-   bodyData: [
-      {
-         id: 1,
-         label: 'Body 1',
-         paths: [
-            {
-               imagePath: '',
-               modelName: 'body 1.1',
-               modelPath: '',
-               modelType: 'body'
-            },
-            {
-               imagePath: '',
-               modelName: 'body 1.2',
-               modelPath: '',
-               modelType: 'body'
-            }
-         ]
-      },
-      {
-         id: 2,
-         label: 'Body 2',
-         paths: [
-            {
-               imagePath: '',
-               modelName: 'body 2.1',
-               modelPath: '',
-               modelType: 'body'
-            },
-            {
-               imagePath: '',
-               modelName: 'body 2.2',
-               modelPath: '',
-               modelType: 'body'
-            }
-         ]
-      }
-   ],
    wheelsData: [],
    tiresData: [],
    suspensionsData: [],
@@ -1200,6 +1165,34 @@ const vehicleReducer = (state = initState, action) => {
          return {
             ...state,
             vehiclesData: action.payload
+         };
+
+      case GET_BRANDS_SUCCESS:
+         var registeredBrands = action.payload;
+
+         for(var i = 0; i < registeredBrands.length; i++) {
+            var link = {
+               "path": "/vehicles",
+               "menu_title": `menu.${registeredBrands[i].split(' ').join().toLowerCase()}`,
+               "brand_name": `menu.${registeredBrands[i].split(' ').join().toLowerCase()}`,
+               "brand_logo": `${registeredBrands[i].split(' ').join().toLowerCase()}`
+            };
+   
+            if (i%4 === 0) {
+               navLinks[1].child_routes[`menu.vehicles${i%4+1}`].push(link);
+            } else if (i%4 === 1) {
+               navLinks[1].child_routes[`menu.vehicles${i%4+1}`].push(link);
+            } else if (i%4 === 2) {
+               navLinks[1].child_routes[`menu.vehicles${i%4+1}`].push(link);
+            } else {
+               navLinks[1].child_routes[`menu.vehicles${i%4+1}`].push(link);
+            }
+         }   
+
+         return {
+            ...state,
+            selectedBrand: registeredBrands.length ? `menu.${registeredBrands[0].split(' ').join().toLowerCase()}` : '',
+            navLinks
          };
 
       case GET_PARTIALS_SUCCESS:

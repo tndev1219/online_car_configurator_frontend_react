@@ -12,6 +12,7 @@ import Grow from '@material-ui/core/Grow';
 import IntlMessages from '../../utils/IntlMessages';
 
 import * as vehicleActions from '../../store/actions/vehicle';
+import appConfig from '../../config/AppConfig';
 
 const areEqual = (prevProps, nextProps) => true;
 
@@ -29,7 +30,7 @@ const Vehicles = () => {
    useEffect(() => {
       var selectedVehiclesData = vehiclesData.filter((vehicle) => vehicle.brand.split(' ').join().toLowerCase() === selectedBrand.split('.')[1].split(" ").join());
       setSelectedVehiclesData(selectedVehiclesData);
-   }, [selectedBrand, vehiclesData]);   
+   }, [selectedBrand, vehiclesData]);
 
    return (
       <Fragment>
@@ -52,7 +53,7 @@ const Vehicles = () => {
                                        <CardMedia
                                           height="140"
                                           component="img"
-                                          image={vehicle.imagePath}
+                                          image={`${appConfig.serverURL}${vehicle.imagePath}`}
                                        />
                                        <CardContent className="iron-product-content pt-10 pb-0 border">
                                           <h5 className="text-capitalize mb-10">{vehicle.vehicleType}</h5>
@@ -71,8 +72,7 @@ const Vehicles = () => {
                               timeout={800}
                            >
                               <p className="d-flex justify-content-center align-items-center mt-20" style={{fontSize: '1.2rem'}}>
-                                 <b className="text-capitalize">{selectedBrand.split('.')[1]}</b>
-                                 's models are not yet registered!
+                                 Any Vehicles are not yet registered!
                               </p>
                            </Grow>
                         </Grid>

@@ -2,6 +2,7 @@ import {
    SELECT_BRAND,
    SELECT_MODEL,
    GET_VEHICLES,
+   GET_BRANDS,
    GET_PARTIALS
 } from "./vehicleTypes";
 
@@ -21,6 +22,11 @@ export const selectModel = (selectedModelPath, selectedVehicleType) => ({
 // Get Vehicles Model Data Action
 export const getVehicles = () => ({
    type: GET_VEHICLES
+});
+
+// Get Registered Vehicles Brand
+export const getBrands = () => ({
+   type: GET_BRANDS
 });
 
 // Get Partials Model Data Action

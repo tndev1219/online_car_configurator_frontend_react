@@ -16,7 +16,7 @@ import MenuItem                       from '@material-ui/core/MenuItem';
 import Slider                         from '@material-ui/core/Slider';
 import IconButton                     from '@material-ui/core/IconButton';
 
-import DirectionsCarRoundedIcon from '@material-ui/icons/DirectionsCarRounded';
+import DirectionsCarRoundedIcon       from '@material-ui/icons/DirectionsCarRounded';
 import CameraRoundedIcon              from '@material-ui/icons/CameraRounded';
 import AlbumRoundedIcon               from '@material-ui/icons/AlbumRounded';
 import AllInboxRoundedIcon            from '@material-ui/icons/AllInboxRounded';
@@ -35,7 +35,9 @@ import CloseRoundedIcon               from '@material-ui/icons/CloseRounded';
 import KeyboardArrowDownRoundedIcon   from '@material-ui/icons/KeyboardArrowDownRounded';
 import KeyboardArrowLeftRoundedIcon   from '@material-ui/icons/KeyboardArrowLeftRounded';
 
+import ColorPicker                    from '../Forms/ColorPicker';
 import * as vehicleActions            from '../../../store/actions/vehicle';
+import appConfig                      from '../../../config/AppConfig';
 
 const useStyles = makeStyles(theme => ({
    root: {
@@ -136,10 +138,25 @@ const PrettoSlider = withStyles({
    },
 })(Slider);
 
-const areEqual = (prevProps, nextProps) => true;
+const areEqual = (prevProps, nextProps) => {
+   if (prevProps.bodyPartOptions.length === 0 && nextProps.bodyPartOptions.length !== 0) {
+      return false;
+   }
+   return true;
+};
 
-const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTireSize, changeSuspensionSize }) => {
-
+const VerticalTabs = ({ 
+   changePartials, 
+   changeWheelSize, 
+   changeColor, 
+   changeBodyGlassOpacity,
+   changeTireSize, 
+   changeSuspensionSize, 
+   changeBodyPartColor, 
+   bodyPartOptions,
+   showAllBodyAnnotation,
+   hideAllBodyAnnotation
+ }) => {
    const classes = useStyles();
    const dispatch = useDispatch();
    const selectedVehicleType = useSelector(state => state.vehicle.selectedVehicleType);
@@ -148,7 +165,6 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
       dispatch(vehicleActions.getPartials(selectedVehicleType));
    }, [dispatch, selectedVehicleType]);
    
-   const bodyData                 = useSelector(state => state.vehicle.bodyData);
    const wheelsData               = useSelector(state => state.vehicle.wheelsData);   
    const tiresData                = useSelector(state => state.vehicle.tiresData);
    const suspensionsData          = useSelector(state => state.vehicle.suspensionsData);
@@ -185,7 +201,9 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    const [state, setState] = useState({
       sltedPartialIndex       : 0,
       showContentsBar         : false,      
-      sltedBodyBrand          : '',
+      prevSltedBodyPartOption : '',
+      sltedBodyPartOption     : '',
+      sltedGlassOpacity       : 0,
       sltedWheelBrand         : '',
       sltedTireModelIndex     : 0,
       sltedWheelDiameterIndex : 0,
@@ -197,7 +215,6 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    });
    
    const [sltedPartialModel, setSltedPartialModel] = useState({
-      sltedbodyModel           : '',
       sltedwheelModel          : '',
       sltedtireModel           : '',
       sltedsuspensionModel     : '',
@@ -250,7 +267,7 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
    });
    
    const [sltedColor, setSltedColor] = useState({
-      sltedBodyColor            : '',
+      sltedBodyColor        : '',
       sltedWheelColor           : '',
       sltedSuspensionColor      : '',
       sltedShockColor           : '',
@@ -271,12 +288,13 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
          return;
       }
 
+      if (state.sltedPartialIndex === 0 && partialIndex !== 0) {
+         hideAllBodyAnnotation();
+      }
+
       if (partialIndex === 0) {
-         if (state.sltedBodyBrand !== '') {
-            setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bodyColorData, modelData: null });
-         } else {
-            setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bodyColorData, modelData: null });
-         }
+         showAllBodyAnnotation();
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bodyColorData, modelData: null });
       } else if (partialIndex === 1) {
          if (state.sltedWheelBrand !== '') {
             setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: wheelsColorData, modelData: wheelsData[state.sltedWheelBrand].paths });
@@ -312,14 +330,22 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
       } 
    };
 
-   const sltBodyBrand = event => {
-      if (event.target.value === state.sltedBodyBrand) {
+   const sltBodyPartOption = event => {
+      if (event.target.value === state.sltedBodyPartOption) {
          return;
       }
 
-      var body = bodyData.filter(body => body.id === event.target.value);
+      setState({ ...state, sltedBodyPartOption: event.target.value });
+   };
 
-      setState({ ...state, sltedBodyBrand: event.target.value, modelData: body[0].paths });
+   const sltGlassOpacity = (value) => {
+      if (state.sltedGlassOpacity === value) {
+         return;
+      }
+
+      setState({ ...state, sltedGlassOpacity: value });
+      
+      changeBodyGlassOpacity(value);
    };
 
    const sltWheelBrand = event => {
@@ -388,21 +414,23 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
       }
    };
 
-   const sltSuspensionSize = (value, type) => {
-      if (state.sltedSuspensionSize === value) {
+   const sltSuspensionSize = event => {
+      if (state.sltedSuspensionSize === event.target.value) {
          return;
       }
 
-      setState({ ...state, sltedSuspensionSize: value });
-      changeSuspensionSize(value, type);
+      setState({ ...state, sltedSuspensionSize: event.target.value });
+      changeSuspensionSize(event.target.value, 'suspension');
    };
 
    const sltColor = (value, type) => {
+      type = type.toLowerCase();
 
       if (type === 'body') {
-         if (sltedColor.sltedBodyColor === value) {
+         if (state.sltedBodyPartOption.length === 0 || (state.prevSltedBodyPartOption === state.sltedBodyPartOption && sltedColor.sltedBodyColor === value)) {
             return;
          }
+         setState({ ...state, prevSltedBodyPartOption: state.sltedBodyPartOption });
          setSltedColor({ ...sltedColor, sltedBodyColor: value });
       } else if (type === 'wheel') {
          if (sltedColor.sltedWheelColor === value) {
@@ -466,13 +494,21 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
          setSltedColor({ ...sltedColor, sltedHitchColor: value });
       }
 
-      changeColor(value, type);
+      if (type === 'body') {
+         changeBodyPartColor(value, state.sltedBodyPartOption);
+      } else {
+         changeColor(value, type);
+      }
    };
 
    const toggleContentsBar = (status) => event => {
 
       if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
          return;
+      }
+
+      if (state.sltedPartialIndex === 0) {
+         hideAllBodyAnnotation();
       }
 
       setState({ ...state, showContentsBar: status, sltedPartialIndex: 0 });
@@ -534,15 +570,15 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                            {
                               state.sltedPartialIndex === 0 && // Brand select for Body
                               <FormControl variant="outlined" className={classes.formControl}>
-                                 <InputLabel className="outlined-slt-label-sm">Brand</InputLabel>
+                                 <InputLabel className="outlined-slt-label-sm">Part Name</InputLabel>
                                  <Select
-                                    value={state.sltedBodyBrand}
-                                    onChange={sltBodyBrand}
-                                    labelWidth={42}
-                                    inputProps={{ name: 'sltedBodyBrand' }}
+                                    value={state.sltedBodyPartOption}
+                                    onChange={sltBodyPartOption}
+                                    labelWidth={78}
+                                    inputProps={{ name: 'sltedBodyPartOption' }}
                                  >
-                                    {bodyData.map((body, index) => (
-                                       <MenuItem key={index} value={body.id}>{body.label}</MenuItem>
+                                    {bodyPartOptions.map((bodyPart, index) => (
+                                       <MenuItem key={index} value={bodyPart}>{bodyPart}</MenuItem>
                                     ))}
                                  </Select>
                               </FormControl>
@@ -571,13 +607,13 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                                        {
                                           state.sltedPartialIndex !== 2 && // if selected partial is Not Tire
                                           <Button onClick={() => sltPartialModel(model.modelPath, model.modelType)}>
-                                             <img src={model.imagePath} alt={`model${index}`} width='100' ></img>
+                                             <img src={`${appConfig.serverURL}${model.imagePath}`} alt={`model${index}`} width='100' ></img>
                                           </Button>
                                        }
                                        {
                                           state.sltedPartialIndex === 2 && // if selected partial is Tire
                                           <Button onClick={() => sltTireModel(model.modelPath, model.modelType, index)}>
-                                             <img src={model.imagePath} alt={`model${index}`} width='100' ></img>
+                                             <img src={`${appConfig.serverURL}${model.imagePath}`} alt={`model${index}`} width='100' ></img>
                                           </Button>
                                        }
                                        <p style={{ textAlign: 'center' }}>{model.modelName}</p>
@@ -651,18 +687,20 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                               }
                               {
                                  state.sltedPartialIndex === 3 && // if selected partial is Suspension
-                                 <Grid container justify='center' alignItems='center' className="mb-10">
-                                    <Grid item style={{ width: 220 }}>
-                                       <PrettoSlider
-                                          className="mt-30"
-                                          valueLabelDisplay="on"
-                                          value={state.sltedSuspensionSize}
-                                          max={10}
-                                          valueLabelFormat={x => `${x}"`}
-                                          onChange={(e, value) => sltSuspensionSize(value, 'suspension')}
-                                       />
-                                    </Grid>
-                                 </Grid>
+                                 <FormControl variant="outlined" className={classes.formControl}>
+                                    <InputLabel className="outlined-slt-label-sm">Size</InputLabel>
+                                    <Select
+                                       value={state.sltedSuspensionSize}
+                                       onChange={sltSuspensionSize}
+                                       labelWidth={40}
+                                       inputProps={{ name: 'sltedSuspensionSize' }}
+                                    >
+                                       <MenuItem value={0}>0</MenuItem>
+                                       {state.modelData[0] && state.modelData[0].modelSizeArr.map((size, index) => (
+                                          <MenuItem key={index} value={size}>{size}</MenuItem>
+                                       ))}
+                                    </Select>
+                                 </FormControl>
                               }
                            </Collapse>
                         </Grid>
@@ -674,7 +712,12 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                            <Divider variant="middle" />
                            <Grid container className="pt-20" >
                               <Grid item className="ml-20">
-                                 <p className="lead">Color</p>
+                                 {
+                                    state.sltedPartialIndex === 0 && state.sltedBodyPartOption === 'Body Glass' ?
+                                    <p className="lead">Opacity</p>    
+                                    :
+                                    <p className="lead">Color</p>
+                                 }
                               </Grid>
                            </Grid>
                            <IconButton onClick={() => toggleContents(`show${partialBar[state.sltedPartialIndex].showStateLabel}ColorContents`)} size="small" className={classes.transitionBtn} >
@@ -682,16 +725,45 @@ const VerticalTabs = ({ changePartials, changeWheelSize, changeColor, changeTire
                            </IconButton>
 
                            <Collapse in={toggleContent[`show${partialBar[state.sltedPartialIndex].showStateLabel}ColorContents`]} className={classes.collapse}>
-                              <Grid container justify="space-between" className="mb-10" style={{ width: 242, marginLeft: 29 }} >
-                                 {state.colorData && state.colorData.map((color, index) => (
-                                    <Grid item key={index}>
-                                       <Button onClick={() => sltColor(color.value, color.modelType)}>
-                                          <div style={{ width: 100, height: 100, background: `${color.value}` }}></div>
-                                       </Button>
-                                       <p style={{ textAlign: 'center' }}>{color.colorName}</p>
+                              {
+                                 state.sltedPartialIndex === 0 && state.sltedBodyPartOption === 'Body Glass' ?
+                                 <>
+                                    <Grid container justify='center' alignItems='center' className="mb-10">
+                                       <Grid item style={{ width: 220 }}>
+                                          <PrettoSlider
+                                             className="mt-30"
+                                             valueLabelDisplay="on"
+                                             value={state.sltedGlassOpacity}
+                                             max={100}
+                                             onChange={(e, value) => sltGlassOpacity(value)}
+                                          />
+                                       </Grid>
                                     </Grid>
-                                 ))}
-                              </Grid>
+                                 </>
+                                 :
+                                 <>
+                                    <Grid container justify="center" >
+                                       <Grid item>
+                                          <ColorPicker
+                                             color={sltedColor[`slted${partialBar[state.sltedPartialIndex].showStateLabel}Color`]}
+                                             handleChange={sltColor}
+                                             type={partialBar[state.sltedPartialIndex].showStateLabel}
+                                          />
+                                          <p className="mt-5" style={{ textAlign: 'center' }}>Custom</p>
+                                       </Grid>
+                                    </Grid>
+                                    <Grid container justify="space-between" className="mb-10" style={{ width: 242, marginLeft: 29 }} >
+                                       {state.colorData && state.colorData.map((color, index) => (
+                                          <Grid item key={index}>
+                                             <Button onClick={() => sltColor(color.value, color.modelType)}>
+                                                <div style={{ width: 100, height: 100, background: `${color.value}` }}></div>
+                                             </Button>
+                                             <p style={{ textAlign: 'center' }}>{color.colorName}</p>
+                                          </Grid>
+                                       ))}
+                                    </Grid>
+                                 </>
+                              }
                            </Collapse>
                         </Grid>
                      }

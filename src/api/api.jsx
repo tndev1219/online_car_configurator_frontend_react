@@ -1,4 +1,5 @@
 import axios from 'axios';
+import appConfig from '../config/AppConfig';
 
 const config = {
    headers: {
@@ -8,13 +9,13 @@ const config = {
 };
 
 const POST = (url, params) => {
-   return axios.post(`apis/${url}`, params, config);
+   return axios.post(`${appConfig.serverURL}apis/${url}`, params, config);
 };
 const PUT = (url, params) => {
-   return axios.put(`apis/${url}`, params, config);
+   return axios.put(`${appConfig.serverURL}apis/${url}`, params, config);
 };
 const GET = (url, params) => {
-   return axios.get(`apis/${url}?${dictToURI(params)}`, config);
+   return axios.get(`${appConfig.serverURL}apis/${url}?${dictToURI(params)}`, config);
 };
 
 const dictToURI = (dict) => {

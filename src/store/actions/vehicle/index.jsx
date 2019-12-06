@@ -1,1 +1,7 @@
-export { selectBrand, selectModel, getVehicles, getPartials } from './vehicleActions';
+export { 
+   selectBrand, 
+   selectModel, 
+   getVehicles, 
+   getBrands,
+   getPartials 
+} from './vehicleActions';

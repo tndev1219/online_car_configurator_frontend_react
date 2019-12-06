@@ -21,11 +21,11 @@ canvas {
 	resize: both;
 }
 
-#colorPickerWidget{
+#colorPickerWidget {
 	position: absolute;
-    width: 400px;
-    height: 400px;
-    right: 30px;
+	width: 400px;
+	height: 400px;
+	right: 30px;
 	top: 20px;
 	z-index: 10;
 }
@@ -54,6 +54,12 @@ canvas {
 	top: 12px;
 }
 
+.body-color-target {
+	animation-duration: 0.5s;
+	animation-delay: 0s;
+	animation-iteration-count: 1;
+}
+
 .body-color-target .comment {
 	position: absolute;
 	left: 50px;
@@ -69,6 +75,9 @@ canvas {
 	user-select: none;
 	/* Likely future */
 	text-align: center;
+	animation-duration: 1s;
+	animation-delay: 0s;
+	animation-iteration-count: 1;
 }
 
 #loading-container {
