@@ -22,7 +22,7 @@ class SignUpPage extends Component {
           <Helmet>
             <title>Car | Sign up</title>
           </Helmet>
-          <div className="inner-container section-pad bg-base">
+          <div className="inner-container section-pad bg-base d-flex justify-content-center align-items-center">
             <div className="container">
               <Grid container spacing={0}>
                 <Grid item xs={12} sm={12} md={10} lg={9} className="mx-auto">

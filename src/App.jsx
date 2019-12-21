@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect } from "react-redux";
+import { useDispatch } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 
 // Redux
 import * as appSettingActions from './store/actions/appSetting';
+import * as vehicleActions from './store/actions/vehicle';
 
 import Routes from './routes';
 
 const App = (props) => {
+
+   const dispatch = useDispatch();
+   
+   useEffect(() => {
+      dispatch(vehicleActions.getBrands());
+   }, [dispatch]);
+
    return (
       <div className="app-container">
          <Switch>

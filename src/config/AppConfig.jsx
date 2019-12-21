@@ -6,8 +6,8 @@ export default {
    AppLogo: require('../assets/images/logo.png'),         // App logo
    navCollapsed: true,                                          // Sidebar Nav Layout
 
-   serverURL: 'http://54.172.22.179:4000/', // Production Environment
-   // serverURL: 'http://localhost:4000/', // Test Environment
+   // serverURL: 'http://54.172.22.179:4000/', // Production Environment
+   serverURL: 'http://localhost:4000/', // Test Environment
 
    // Default locale
    locale: {

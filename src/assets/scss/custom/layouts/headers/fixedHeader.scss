@@ -6,7 +6,8 @@
 	transform: translateY(0);
 }
 .iron-fixed-header {
-	position: fixed;
+    position: fixed;
+    height: 64px;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -16,6 +17,7 @@
 	transition: .3s ease-in-out 0s;
 	-webkit-transform: translateY(-100%);
     transform: translateY(-100%);
+
     .iron-header-menu{
         li{
             padding:0 5px;

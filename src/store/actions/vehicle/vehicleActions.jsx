@@ -13,10 +13,12 @@ export const selectBrand = data => ({
 });
 
 // select model action creator
-export const selectModel = (selectedModelPath, selectedVehicleType) => ({
+export const selectModel = (selectedVehicleModelPath, selectedVehicleImagePath, selectedVehicleType, vehicleConfigOptions) => ({
    type: SELECT_MODEL,
-   selectedModel: selectedModelPath,
-   selectedVehicleType: selectedVehicleType
+   selectedVehicleModelPath,
+   selectedVehicleImagePath,
+   selectedVehicleType,
+   vehicleConfigOptions
 });
 
 // Get Vehicles Model Data Action

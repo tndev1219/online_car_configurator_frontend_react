@@ -19,11 +19,11 @@ import { Router } from "react-router-dom";
 const store = configureStore();
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <App />
-    </Router>
-  </Provider>
-  , document.getElementById('root'));
+   <Provider store={store}>
+      <Router history={history}>
+         <App />
+      </Router>
+   </Provider>
+   , document.getElementById('root'));
 
 serviceWorker.unregister();

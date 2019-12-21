@@ -41,8 +41,12 @@
     }
 }
 
+.inner-container {
+   height: calc(100vh - 18rem);
+}
+
 .section-pad{
-    padding: 5rem 0;
+    padding: 9rem 0;
 }
 
 .text-truncate{

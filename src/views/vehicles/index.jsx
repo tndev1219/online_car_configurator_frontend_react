@@ -28,8 +28,10 @@ const Vehicles = () => {
    }, [dispatch, selectedBrand]);
 
    useEffect(() => {
-      var selectedVehiclesData = vehiclesData.filter((vehicle) => vehicle.brand.split(' ').join().toLowerCase() === selectedBrand.split('.')[1].split(" ").join());
-      setSelectedVehiclesData(selectedVehiclesData);
+      if (vehiclesData.length !== 0 && selectedBrand.length !== 0) {
+         var selectedVehiclesData = vehiclesData.filter((vehicle) => vehicle.brand.split(' ').join().toLowerCase() === selectedBrand.split('.')[1].split(" ").join(''));
+         setSelectedVehiclesData(selectedVehiclesData);
+      }
    }, [selectedBrand, vehiclesData]);
 
    return (
@@ -40,24 +42,27 @@ const Vehicles = () => {
          <div className="iron-home-wrap">
             <div className="section-pad">
                <div className="container">
-                  <Grid container spacing={7}>
+                  <Grid container spacing={3}>
                      {selectedVehiclesData.length !== 0 && selectedVehiclesData.map((vehicle, key) => (
-                        <Grid item xs={12} sm={6} md={6} lg={4} xl={4} key={key} >
+                        <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={key} >
                            <Grow
                               in={true}
                               timeout={800}
                            >
                               <Button>
                                  <Card className="iron-shop-item iron-shadow hover-box-shadow">
-                                    <Link to={'/config'} className='d-block' onClick={() => dispatch(vehicleActions.selectModel(vehicle.modelPath, vehicle.vehicleType))}>
+                                    <Link 
+                                       to={'/vehicle'} 
+                                       className='d-block' 
+                                       onClick={() => dispatch(vehicleActions.selectModel(vehicle.modelPath, vehicle.imagePath, vehicle.vehicleType, vehicle.configOptions))}
+                                    >
                                        <CardMedia
                                           height="140"
                                           component="img"
                                           image={`${appConfig.serverURL}${vehicle.imagePath}`}
                                        />
                                        <CardContent className="iron-product-content pt-10 pb-0 border">
-                                          <h5 className="text-capitalize mb-10">{vehicle.vehicleType}</h5>
-                                          <p className="text-capitalize mb-15"><IntlMessages id={selectedBrand} /></p>
+                                          <p className="text-capitalize mb-10" style={{textAlign: 'left'}}><IntlMessages id={selectedBrand} /> - {vehicle.vehicleType}</p>
                                        </CardContent>
                                     </Link>
                                  </Card>

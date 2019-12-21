@@ -24,12 +24,12 @@ class Config extends React.Component {
 
    componentDidMount() {
 
-      if (this.props.selectedModel.length === 0) {
-         this.props.history.push('/vehicles');
+      if (this.props.selectedVehicleModelPath.length === 0) {
+         this.props.history.push('/');
       } else {
          this.viewer3D = new window.Viewer3D();
 
-         var vehicleModelURL = this.props.selectedModel;
+         var vehicleModelURL = this.props.selectedVehicleModelPath;
 
          var self = this;
 
@@ -123,7 +123,7 @@ class Config extends React.Component {
 
 const mapStateToProps = (state) => ({
    waiting: state.appSetting.waiting,
-   selectedModel: state.vehicle.selectedModel
+   selectedVehicleModelPath: state.vehicle.selectedVehicleModelPath
 })
 
 const mapDispatchToProps = {
