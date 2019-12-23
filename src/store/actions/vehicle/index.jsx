@@ -3,5 +3,6 @@ export {
    selectModel, 
    getVehicles, 
    getBrands,
-   getPartials 
+   getPartials,
+   getLogo 
 } from './vehicleActions';

@@ -98,10 +98,42 @@ export function* getPartials() {
    });
 }
 
+export function* getLogo() {
+   yield takeEvery(vehicleTypes.GET_LOGO, function* () {
+      try {
+         const res = yield call(api.POST, 'getLogo');
+
+         if (res.data.success) {
+            yield put({
+               type: vehicleTypes.GET_LOGO_SUCCESS,
+               payload: res.data.result
+            });            
+         } else {
+            yield put({
+               type: appSettingTypes.SHOW_ALERT,
+               payload: {
+                  message: res.data.message,
+                  alertType: 'error'
+               }
+            });
+         }
+      } catch (err) {
+         yield put({
+            type: appSettingTypes.SHOW_ALERT,
+            payload: {
+               message: "Failed to Get Logo. Please try again later...",
+               alertType: 'error'
+            }
+         });
+      }
+   });
+}
+
 export default function* rootSaga() {
    yield all([
       fork(getVehicles),
       fork(getBrands),
-      fork(getPartials)
+      fork(getPartials),
+      fork(getLogo)
    ]);
 }

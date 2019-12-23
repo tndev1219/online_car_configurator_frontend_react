@@ -3,7 +3,8 @@ import {
    SELECT_MODEL,
    GET_VEHICLES,
    GET_BRANDS,
-   GET_PARTIALS
+   GET_PARTIALS,
+   GET_LOGO
 } from "./vehicleTypes";
 
 // select brand action creator
@@ -35,4 +36,9 @@ export const getBrands = () => ({
 export const getPartials = (selectedVehicleType) => ({
    type: GET_PARTIALS,
    selectedVehicleType: selectedVehicleType
+});
+
+// Get Logo Image Action
+export const getLogo = () => ({
+   type: GET_LOGO
 });

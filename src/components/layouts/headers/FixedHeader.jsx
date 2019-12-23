@@ -9,18 +9,20 @@ import Grid from "@material-ui/core/Grid";
 import Button from '@material-ui/core/Button';
 
 // components
-import AppConfig from '../../../config/AppConfig';
+import appConfig from '../../../config/AppConfig';
 import Logout from "./Logout";
 
 function FixedHeader(props) {
-
+   
    return (
       <div className="iron-fixed-header bg-primary">
          <div style={{height: '100%'}}>
             <Grid container spacing={0} style={{height: '100%'}}>
                <Grid item xs={6} sm={6} md={3} lg={3} xl={4} className="d-flex justify-content-start align-items-center" >
                   <div className="iron-app-logo ml-40">
-                     <img src={AppConfig.AppLogo} alt="header-logo" onClick={() => props.history.push('/')} />
+                     {
+                        props.logoImage.length !==0 && <img src={`${appConfig.serverURL}${props.logoImage}`} alt="header-logo" onClick={() => props.history.push('/')} style={{maxHeight: 25}} />
+                     }                     
                   </div>
                </Grid>
                <Grid item xs={6} sm={6} md={9} lg={9} xl={8}>
@@ -38,6 +40,7 @@ function FixedHeader(props) {
 
 export default connect(   
    state => ({
-      isLoggedIn: state.auth.token ? true : false
+      isLoggedIn: state.auth.token ? true : false,
+      logoImage: state.vehicle.logoImage
    })
 )(FixedHeader);

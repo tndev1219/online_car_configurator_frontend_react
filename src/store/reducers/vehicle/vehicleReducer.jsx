@@ -3,7 +3,8 @@ import {
    SELECT_MODEL,
    GET_VEHICLES_SUCCESS,
    GET_PARTIALS_SUCCESS,
-   GET_BRANDS_SUCCESS
+   GET_BRANDS_SUCCESS,
+   GET_LOGO_SUCCESS
 } from '../../actions/vehicle/vehicleTypes';
 
 const initState = {
@@ -1144,7 +1145,8 @@ const initState = {
          colorName: 'Orange',
          modelType: 'hitch'
       }
-   ]
+   ],
+   logoImage: ''
 };
 
 const vehicleReducer = (state = initState, action) => {
@@ -1196,6 +1198,12 @@ const vehicleReducer = (state = initState, action) => {
             bedaccessoryData     : action.payload.bedaccessoryData,
             additionallightData  : action.payload.additionallightData,
             hitchData            : action.payload.hitchData
+         };
+
+      case GET_LOGO_SUCCESS:
+         return {
+            ...state,
+            logoImage: action.payload
          };
 
       default:

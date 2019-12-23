@@ -18,6 +18,10 @@ const App = (props) => {
       dispatch(vehicleActions.getBrands());
    }, [dispatch]);
 
+   useEffect(() => {
+      dispatch(vehicleActions.getLogo());
+   }, [dispatch]);
+
    return (
       <div className="app-container">
          <Switch>

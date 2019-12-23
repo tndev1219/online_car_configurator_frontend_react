@@ -6,3 +6,5 @@ export const GET_BRANDS = 'GET_BRANDS';
 export const GET_BRANDS_SUCCESS = 'GET_BRANDS_SUCCESS';
 export const GET_PARTIALS = 'GET_PARTIALS';
 export const GET_PARTIALS_SUCCESS = 'GET_PARTIALS_SUCCESS';
+export const GET_LOGO = 'GET_LOGO';
+export const GET_LOGO_SUCCESS = 'GET_LOGO_SUCCESS';
