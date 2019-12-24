@@ -71,6 +71,10 @@ class Config extends React.Component {
       window.viewer3D.setOpacityBodyGlass(value);
    };
 
+   changeWheelDistance = (value) => {
+      console.log(value);
+   };
+
    showAllBodyAnnotation = () => {
       window.viewer3D.showAllBodyAnnotation();
    };
@@ -96,6 +100,7 @@ class Config extends React.Component {
                      changeSuspensionSize={this.changeSuspensionSize}
                      changeBodyPartColor={this.changeBodyPartColor}
                      changeBodyGlassOpacity={this.changeBodyGlassOpacity}
+                     changeWheelDistance={this.changeWheelDistance}
                      bodyPartOptions={this.state.bodyPartOptions}
                      showAllBodyAnnotation={this.showAllBodyAnnotation}
                      hideAllBodyAnnotation={this.hideAllBodyAnnotation}

@@ -16,6 +16,7 @@ import MenuItem                       from '@material-ui/core/MenuItem';
 import Slider                         from '@material-ui/core/Slider';
 import IconButton                     from '@material-ui/core/IconButton';
 
+import SettingsRoundedIcon            from '@material-ui/icons/SettingsRounded';
 import DirectionsCarRoundedIcon       from '@material-ui/icons/DirectionsCarRounded';
 import CameraRoundedIcon              from '@material-ui/icons/CameraRounded';
 import AlbumRoundedIcon               from '@material-ui/icons/AlbumRounded';
@@ -90,21 +91,22 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const partialBar = [
-   { index: 0,  icon: <DirectionsCarRoundedIcon />,      label: 'Body',             showStateLabel: 'Body'            },
-   { index: 1,  icon: <CameraRoundedIcon />,             label: 'Wheel',            showStateLabel: 'Wheel'           },
-   { index: 2,  icon: <AlbumRoundedIcon />,              label: 'Tire',             showStateLabel: 'Tire'            },
-   { index: 3,  icon: <AllInboxRoundedIcon />,           label: 'Suspension',       showStateLabel: 'Suspension'      },
-   { index: 4,  icon: <ConfirmationNumberRoundedIcon />, label: 'Shock',            showStateLabel: 'Shock'           },
-   { index: 5,  icon: <CreditCardRoundedIcon />,         label: 'Front Bumper',     showStateLabel: 'FrontBumper'     },
-   { index: 6,  icon: <CallToActionRoundedIcon />,       label: 'Rear Bumper',      showStateLabel: 'RearBumper'      },
-   { index: 7,  icon: <CastConnectedRoundedIcon />,      label: 'Fender',           showStateLabel: 'Fender'          },
-   { index: 8,  icon: <AccountBalanceRoundedIcon />,     label: 'Grille',           showStateLabel: 'Grille'          },
-   { index: 9,  icon: <HighlightRoundedIcon />,          label: 'Headlight',        showStateLabel: 'Headlight'       },
-   { index: 10, icon: <TableChartRoundedIcon />,         label: 'Hood',             showStateLabel: 'Hood'            },
-   { index: 11, icon: <CalendarTodayRoundedIcon />,      label: 'Bed Cover',        showStateLabel: 'BedCover'        },
-   { index: 12, icon: <EventNoteRoundedIcon />,          label: 'Bed Accessory',    showStateLabel: 'BedAccessory'    },
-   { index: 13, icon: <BlurCircularRoundedIcon />,       label: 'Additional Light', showStateLabel: 'AdditionalLight' },
-   { index: 14, icon: <EventSeatRoundedIcon />,          label: 'Hitch',            showStateLabel: 'Hitch'           }
+   { index: 0,  icon: <SettingsRoundedIcon />,           label: 'Setting',          showStateLabel: 'Setting'         },
+   { index: 1,  icon: <DirectionsCarRoundedIcon />,      label: 'Body',             showStateLabel: 'Body'            },
+   { index: 2,  icon: <CameraRoundedIcon />,             label: 'Wheel',            showStateLabel: 'Wheel'           },
+   { index: 3,  icon: <AlbumRoundedIcon />,              label: 'Tire',             showStateLabel: 'Tire'            },
+   { index: 4,  icon: <AllInboxRoundedIcon />,           label: 'Suspension',       showStateLabel: 'Suspension'      },
+   { index: 5,  icon: <ConfirmationNumberRoundedIcon />, label: 'Shock',            showStateLabel: 'Shock'           },
+   { index: 6,  icon: <CreditCardRoundedIcon />,         label: 'Front Bumper',     showStateLabel: 'FrontBumper'     },
+   { index: 7,  icon: <CallToActionRoundedIcon />,       label: 'Rear Bumper',      showStateLabel: 'RearBumper'      },
+   { index: 8,  icon: <CastConnectedRoundedIcon />,      label: 'Fender',           showStateLabel: 'Fender'          },
+   { index: 9,  icon: <AccountBalanceRoundedIcon />,     label: 'Grille',           showStateLabel: 'Grille'          },
+   { index: 10,  icon: <HighlightRoundedIcon />,         label: 'Headlight',        showStateLabel: 'Headlight'       },
+   { index: 11, icon: <TableChartRoundedIcon />,         label: 'Hood',             showStateLabel: 'Hood'            },
+   { index: 12, icon: <CalendarTodayRoundedIcon />,      label: 'Bed Cover',        showStateLabel: 'BedCover'        },
+   { index: 13, icon: <EventNoteRoundedIcon />,          label: 'Bed Accessory',    showStateLabel: 'BedAccessory'    },
+   { index: 14, icon: <BlurCircularRoundedIcon />,       label: 'Additional Light', showStateLabel: 'AdditionalLight' },
+   { index: 15, icon: <EventSeatRoundedIcon />,          label: 'Hitch',            showStateLabel: 'Hitch'           }
 ];
 
 const PrettoSlider = withStyles({
@@ -153,6 +155,7 @@ const VerticalTabs = ({
    changeTireSize, 
    changeSuspensionSize, 
    changeBodyPartColor, 
+   changeWheelDistance,
    bodyPartOptions,
    showAllBodyAnnotation,
    hideAllBodyAnnotation
@@ -202,6 +205,7 @@ const VerticalTabs = ({
       sltedBodyPartOption     : '',
       sltedGlassOpacity       : 0,
       sltedWheelBrand         : '',
+      sltedWheelDistance      : 0,
       sltedTireModelIndex     : 0,
       sltedWheelDiameterIndex : 0,
       sltedWheelWidthIndex    : 0,
@@ -367,6 +371,16 @@ const VerticalTabs = ({
 
       setState({ ...state, sltedWheelBrand: event.target.value, modelData: wheel[0].paths });
    };
+
+   const sltWheelDistance = value => {
+      if (state.sltedWheelDistance === value) {
+         return;
+      }
+
+      setState({ ...state, sltedWheelDistance: value });
+
+      changeWheelDistance(value);
+   }
 
    const sltPartialModel = (modelPath, modelType) => {
 
@@ -650,42 +664,56 @@ const VerticalTabs = ({
                            <Collapse in={toggleContent[`show${configOptions[state.sltedPartialIndex].showStateLabel}SizeContents`]} className={classes.collapse}>
                               {
                                  configOptions[state.sltedPartialIndex].label === 'Wheel' && // if selected partial is Wheel
-                                 <Grid container justify='center' className="mb-15">
-                                    <Grid item style={{ width: 100 }} className="mr-10">
-                                       <FormControl variant="outlined" className={classes.sizeForm}>
-                                          <InputLabel className="outlined-slt-label-sm">Diameter</InputLabel>
-                                          <Select
-                                             value={state.sltedWheelDiameterIndex}
-                                             onChange={sltWheelSize}
-                                             labelWidth={66}
-                                             inputProps={{
-                                                name: 'sltedWheelDiameterIndex'
-                                             }}
-                                          >
-                                             {wheelsDiametersData.map((diameter, index) => (
-                                                <MenuItem key={index} value={diameter.id}>{diameter.label}"</MenuItem>
-                                             ))}
-                                          </Select>
-                                       </FormControl>
+                                 <>
+                                    <Grid container justify='center' className="mb-15">
+                                       <Grid item style={{ width: 100 }} className="mr-10">
+                                          <FormControl variant="outlined" className={classes.sizeForm}>
+                                             <InputLabel className="outlined-slt-label-sm">Diameter</InputLabel>
+                                             <Select
+                                                value={state.sltedWheelDiameterIndex}
+                                                onChange={sltWheelSize}
+                                                labelWidth={66}
+                                                inputProps={{
+                                                   name: 'sltedWheelDiameterIndex'
+                                                }}
+                                             >
+                                                {wheelsDiametersData.map((diameter, index) => (
+                                                   <MenuItem key={index} value={diameter.id}>{diameter.label}"</MenuItem>
+                                                ))}
+                                             </Select>
+                                          </FormControl>
+                                       </Grid>
+                                       <Grid item style={{ width: 100 }} className="ml-10">
+                                          <FormControl variant="outlined" className={classes.sizeForm}>
+                                             <InputLabel className="outlined-slt-label-sm">Width</InputLabel>
+                                             <Select
+                                                value={state.sltedWheelWidthIndex}
+                                                onChange={sltWheelSize}
+                                                labelWidth={44}
+                                                inputProps={{
+                                                   name: 'sltedWheelWidthIndex'
+                                                }}
+                                             >
+                                                {wheelsWidthsData[state.sltedWheelDiameterIndex].map((width, index) => (
+                                                   <MenuItem key={index} value={width.id}>{width.label}"</MenuItem>
+                                                ))}
+                                             </Select>
+                                          </FormControl>
+                                       </Grid>
                                     </Grid>
-                                    <Grid item style={{ width: 100 }} className="ml-10">
-                                       <FormControl variant="outlined" className={classes.sizeForm}>
-                                          <InputLabel className="outlined-slt-label-sm">Width</InputLabel>
-                                          <Select
-                                             value={state.sltedWheelWidthIndex}
-                                             onChange={sltWheelSize}
-                                             labelWidth={44}
-                                             inputProps={{
-                                                name: 'sltedWheelWidthIndex'
-                                             }}
-                                          >
-                                             {wheelsWidthsData[state.sltedWheelDiameterIndex].map((width, index) => (
-                                                <MenuItem key={index} value={width.id}>{width.label}"</MenuItem>
-                                             ))}
-                                          </Select>
-                                       </FormControl>
+                                    <Grid container justify='center' alignItems='center' className="mb-10">
+                                       <Grid item style={{ width: 220 }}>
+                                          <PrettoSlider
+                                             className="mt-40"
+                                             valueLabelDisplay="on"
+                                             value={state.sltedWheelDistance}
+                                             max={4}
+                                             step={0.1}
+                                             onChange={(e, value) => sltWheelDistance(value)}
+                                          />
+                                       </Grid>
                                     </Grid>
-                                 </Grid>
+                                 </>
                               }
                               {
                                  configOptions[state.sltedPartialIndex].label === 'Tire' && // if selected partial is Tire
