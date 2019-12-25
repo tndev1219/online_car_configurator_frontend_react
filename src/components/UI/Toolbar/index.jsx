@@ -88,6 +88,13 @@ const useStyles = makeStyles(theme => ({
       marginTop: -88,
       marginLeft: 255
    },
+   envMenuItem: {
+      display: 'block'
+   },
+   envOptionText: {
+      marginBottom: 0,
+      textAlign: 'center'
+   }
 }));
 
 const partialBar = [
@@ -107,6 +114,29 @@ const partialBar = [
    { index: 13, icon: <EventNoteRoundedIcon />,          label: 'Bed Accessory',    showStateLabel: 'BedAccessory'    },
    { index: 14, icon: <BlurCircularRoundedIcon />,       label: 'Additional Light', showStateLabel: 'AdditionalLight' },
    { index: 15, icon: <EventSeatRoundedIcon />,          label: 'Hitch',            showStateLabel: 'Hitch'           }
+];
+
+const envOptions = [
+   { 
+      menuContent: <img src={require('../../../assets/images/env/parking.jpg')} alt='parking' width={187} />,
+      previewContent: <img src={require('../../../assets/images/env/parking.jpg')} alt='parking' style={{marginTop: 10}} />,
+      label: 'Parking'
+   },
+   { 
+      menuContent: <img src={require('../../../assets/images/env/environment.jpg')} alt='environment' width={187} />,
+      previewContent: <img src={require('../../../assets/images/env/environment.jpg')} alt='environment' style={{marginTop: 10}} />,
+      label: 'Environment'
+   },
+   { 
+      menuContent: <img src={require('../../../assets/images/env/forest.jpg')} alt='forest' width={187} />,
+      previewContent: <img src={require('../../../assets/images/env/forest.jpg')} alt='forest' style={{marginTop: 10}} />,
+      label: 'Forest'
+   },
+   { 
+      menuContent: <img src={require('../../../assets/images/env/night.jpg')} alt='night' width={187} />,
+      previewContent: <img src={require('../../../assets/images/env/night.jpg')} alt='night' style={{marginTop: 10}} />,
+      label: 'Night'
+   }
 ];
 
 const PrettoSlider = withStyles({
@@ -156,6 +186,7 @@ const VerticalTabs = ({
    changeSuspensionSize, 
    changeBodyPartColor, 
    changeWheelDistance,
+   changeEnvMap,
    bodyPartOptions,
    showAllBodyAnnotation,
    hideAllBodyAnnotation
@@ -200,7 +231,8 @@ const VerticalTabs = ({
 
    const [state, setState] = useState({
       sltedPartialIndex       : 0,
-      showContentsBar         : false,      
+      showContentsBar         : false, 
+      sltedEnvOption          : 0,     
       prevSltedBodyPartOption : '',
       sltedBodyPartOption     : '',
       sltedGlassOpacity       : 0,
@@ -233,6 +265,7 @@ const VerticalTabs = ({
    });
    
    const [toggleContent, setToggleContent] = useState({
+      showSettingModelContents         : true,
       showBodyModelContents            : true,
       showBodyColorContents            : true,
       showWheelModelContents           : true,
@@ -292,7 +325,7 @@ const VerticalTabs = ({
 
    useEffect(() => {
       const configOptions = partialBar.filter(option => vehicleConfigOptions.includes(option.label));
-      configOptions.unshift(partialBar[0]);
+      configOptions.unshift(partialBar[0], partialBar[1]);
       
       setConfigOptions(configOptions);
    }, [vehicleConfigOptions]);
@@ -306,7 +339,9 @@ const VerticalTabs = ({
          hideAllBodyAnnotation();
       }
 
-      if (configOptions[partialIndex].label === 'Body') {
+      if (configOptions[partialIndex].label === 'Setting') {
+         setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, modelData: null });
+      } else if (configOptions[partialIndex].label === 'Body') {
          showAllBodyAnnotation();
          setState({ ...state, sltedPartialIndex: partialIndex, showContentsBar: true, colorData: bodyColorData, modelData: null });
       } else if (configOptions[partialIndex].label === 'Wheel') {
@@ -344,6 +379,16 @@ const VerticalTabs = ({
       } 
    };
 
+   const sltEnvOption = event => {
+      if (event.target.value === state.sltedEnvOption) {
+         return;
+      }
+
+      changeEnvMap(envOptions[event.target.value].label);
+      
+      setState({ ...state, sltedEnvOption: event.target.value });
+   };
+
    const sltBodyPartOption = event => {
       if (event.target.value === state.sltedBodyPartOption) {
          return;
@@ -371,6 +416,72 @@ const VerticalTabs = ({
 
       setState({ ...state, sltedWheelBrand: event.target.value, modelData: wheel[0].paths });
    };
+   
+   const sltPartialModel = (modelPath, modelType) => {
+      
+      if (sltedPartialModel[`slted${modelType}Model`] === modelPath) {
+         return;
+      }
+      
+      setSltedPartialModel({ ...sltedPartialModel, [`slted${modelType}Model`]: modelPath });
+      changePartials(modelPath, modelType);
+   };
+   
+   const sltTireModel = (modelPath, modelType, sltedTireModelIndex) => {
+      
+      if (sltedPartialModel[`slted${modelType}Model`] === modelPath) {
+         return;
+      }
+      
+      changePartials(modelPath, modelType);
+      
+      var newSelectedTireDiameter = null;
+      if (tiresData[0]) {
+         newSelectedTireDiameter = wheelsDiametersData[state.sltedWheelDiameterIndex].label * tiresData[sltedTireModelIndex].modelMinSize / wheelsDiametersData[0].label;
+      } else {
+         newSelectedTireDiameter = wheelsDiametersData[state.sltedWheelDiameterIndex].label * 33 / wheelsDiametersData[0].label;
+      }
+      
+      setState({ ...state, sltedTireDiameter: newSelectedTireDiameter, sltedTireModelIndex: sltedTireModelIndex });
+      setSltedPartialModel({ ...sltedPartialModel, sltedtireModel: modelPath });
+      
+      changeTireSize(newSelectedTireDiameter);
+   };
+   
+   const sltWheelSize = event => {
+      if (event.target.name === 'sltedWheelDiameterIndex') {
+         if (state.sltedWheelDiameterIndex === event.target.value) {
+            return;
+         }
+         
+         var currentsltedWheelWidthIndex = wheelsWidthsData[state.sltedWheelDiameterIndex][state.sltedWheelWidthIndex].label;
+         var willsltedWheelWidthIndex = wheelsWidthsData[event.target.value].filter(width => width.label === currentsltedWheelWidthIndex);
+
+         var newSelectedTireDiameter = null;
+         if (tiresData[0]) {
+            newSelectedTireDiameter = wheelsDiametersData[event.target.value].label * tiresData[state.sltedTireModelIndex].modelMinSize / wheelsDiametersData[0].label;
+         } else {
+            newSelectedTireDiameter = wheelsDiametersData[event.target.value].label * 33 / wheelsDiametersData[0].label;
+         }
+         
+         if (willsltedWheelWidthIndex.length === 0) {
+            setState({ ...state, sltedWheelDiameterIndex: event.target.value, sltedWheelWidthIndex: 0, sltedTireDiameter: newSelectedTireDiameter });
+            changeWheelSize(wheelsDiametersData[event.target.value].label, wheelsWidthsData[event.target.value][0].label);
+         } else {
+            setState({ ...state, sltedWheelDiameterIndex: event.target.value, sltedWheelWidthIndex: willsltedWheelWidthIndex[0].id, sltedTireDiameter: newSelectedTireDiameter });
+            changeWheelSize(wheelsDiametersData[event.target.value].label, wheelsWidthsData[event.target.value][willsltedWheelWidthIndex[0].id].label);
+         }
+         
+         changeTireSize(newSelectedTireDiameter);
+      } else {
+         if (state.sltedWheelWidthIndex === event.target.value) {
+            return;
+         }
+         
+         setState({ ...state, sltedWheelWidthIndex: event.target.value });
+         changeWheelSize(wheelsDiametersData[state.sltedWheelDiameterIndex].label, wheelsWidthsData[state.sltedWheelDiameterIndex][event.target.value].label);
+      }
+   };
 
    const sltWheelDistance = value => {
       if (state.sltedWheelDistance === value) {
@@ -381,62 +492,6 @@ const VerticalTabs = ({
 
       changeWheelDistance(value);
    }
-
-   const sltPartialModel = (modelPath, modelType) => {
-
-      if (sltedPartialModel[`slted${modelType}Model`] === modelPath) {
-         return;
-      }
-
-      setSltedPartialModel({ ...sltedPartialModel, [`slted${modelType}Model`]: modelPath });
-      changePartials(modelPath, modelType);
-   };
-
-   const sltTireModel = (modelPath, modelType, sltedTireModelIndex) => {
-      
-      if (sltedPartialModel[`slted${modelType}Model`] === modelPath) {
-         return;
-      }
-
-      changePartials(modelPath, modelType);
-
-      var newSelectedTireDiameter = wheelsDiametersData[state.sltedWheelDiameterIndex].label * tiresData[sltedTireModelIndex].modelMinSize / wheelsDiametersData[0].label;
-
-      setState({ ...state, sltedTireDiameter: newSelectedTireDiameter, sltedTireModelIndex: sltedTireModelIndex });
-      setSltedPartialModel({ ...sltedPartialModel, sltedtireModel: modelPath });
-
-      changeTireSize(newSelectedTireDiameter);
-   };
-
-   const sltWheelSize = event => {
-      if (event.target.name === 'sltedWheelDiameterIndex') {
-         if (state.sltedWheelDiameterIndex === event.target.value) {
-            return;
-         }
-
-         var currentsltedWheelWidthIndex = wheelsWidthsData[state.sltedWheelDiameterIndex][state.sltedWheelWidthIndex].label;
-         var willsltedWheelWidthIndex = wheelsWidthsData[event.target.value].filter(width => width.label === currentsltedWheelWidthIndex);
-
-         var newSelectedTireDiameter = wheelsDiametersData[event.target.value].label * tiresData[state.sltedTireModelIndex].modelMinSize / wheelsDiametersData[0].label;
-
-         if (willsltedWheelWidthIndex.length === 0) {
-            setState({ ...state, sltedWheelDiameterIndex: event.target.value, sltedWheelWidthIndex: 0, sltedTireDiameter: newSelectedTireDiameter });
-            changeWheelSize(wheelsDiametersData[event.target.value].label, wheelsWidthsData[event.target.value][0].label);
-         } else {
-            setState({ ...state, sltedWheelDiameterIndex: event.target.value, sltedWheelWidthIndex: willsltedWheelWidthIndex[0].id, sltedTireDiameter: newSelectedTireDiameter });
-            changeWheelSize(wheelsDiametersData[event.target.value].label, wheelsWidthsData[event.target.value][willsltedWheelWidthIndex[0].id].label);
-         }
-
-         changeTireSize(newSelectedTireDiameter);
-      } else {
-         if (state.sltedWheelWidthIndex === event.target.value) {
-            return;
-         }
-
-         setState({ ...state, sltedWheelWidthIndex: event.target.value });
-         changeWheelSize(wheelsDiametersData[state.sltedWheelDiameterIndex].label, wheelsWidthsData[state.sltedWheelDiameterIndex][event.target.value].label);
-      }
-   };
 
    const sltSuspensionSize = event => {
       if (state.sltedSuspensionSize === event.target.value) {
@@ -582,7 +637,10 @@ const VerticalTabs = ({
                                  configOptions[state.sltedPartialIndex].label === 'Body' ?
                                     <p className="lead">Part</p>
                                  :
-                                    <p className="lead">Model</p>
+                                    configOptions[state.sltedPartialIndex].label === 'Setting' ?
+                                       <p className="lead">Environment</p>
+                                    :
+                                       <p className="lead">Model</p>
                               }
                            </Grid>
                         </Grid>
@@ -592,6 +650,26 @@ const VerticalTabs = ({
 
                         <Collapse in={toggleContent[`show${configOptions[state.sltedPartialIndex].showStateLabel}ModelContents`]} className={classes.collapse}>
                            {
+                              configOptions[state.sltedPartialIndex].label === 'Setting' && // Environment select for Setting
+                              <FormControl variant="outlined" className={classes.formControl}>
+                                 <Select
+                                    value={state.sltedEnvOption}
+                                    onChange={sltEnvOption}
+                                    renderValue={id => (
+                                       <div>{envOptions[id].label}</div>
+                                    )}
+                                 >
+                                    {envOptions.map((env, index) => (
+                                       <MenuItem key={index} value={index} className={`${classes.envMenuItem} testest`}>
+                                          {env.menuContent}
+                                          <p className={classes.envOptionText}>{env.label}</p>
+                                       </MenuItem>
+                                    ))}
+                                 </Select>
+                                 {envOptions[state.sltedEnvOption].previewContent}
+                              </FormControl>
+                           }
+                           {
                               configOptions[state.sltedPartialIndex].label === 'Body' && // Option select for Body
                               <FormControl variant="outlined" className={classes.formControl}>
                                  <InputLabel className="outlined-slt-label-sm">Part Name</InputLabel>
@@ -599,7 +677,6 @@ const VerticalTabs = ({
                                     value={state.sltedBodyPartOption}
                                     onChange={sltBodyPartOption}
                                     labelWidth={78}
-                                    inputProps={{ name: 'sltedBodyPartOption' }}
                                  >
                                     {bodyPartOptions.map((bodyPart, index) => (
                                        <MenuItem key={index} value={bodyPart}>{bodyPart}</MenuItem>
@@ -615,7 +692,6 @@ const VerticalTabs = ({
                                     value={state.sltedWheelBrand}
                                     onChange={sltWheelBrand}
                                     labelWidth={42}
-                                    inputProps={{ name: 'sltedWheelBrand' }}
                                  >
                                     {wheelsData.map((wheel, index) => (
                                        <MenuItem key={index} value={wheel.id}>{wheel.label}</MenuItem>
@@ -673,9 +749,7 @@ const VerticalTabs = ({
                                                 value={state.sltedWheelDiameterIndex}
                                                 onChange={sltWheelSize}
                                                 labelWidth={66}
-                                                inputProps={{
-                                                   name: 'sltedWheelDiameterIndex'
-                                                }}
+                                                inputProps={{ name: 'sltedWheelDiameterIndex' }}
                                              >
                                                 {wheelsDiametersData.map((diameter, index) => (
                                                    <MenuItem key={index} value={diameter.id}>{diameter.label}"</MenuItem>
@@ -690,9 +764,7 @@ const VerticalTabs = ({
                                                 value={state.sltedWheelWidthIndex}
                                                 onChange={sltWheelSize}
                                                 labelWidth={44}
-                                                inputProps={{
-                                                   name: 'sltedWheelWidthIndex'
-                                                }}
+                                                inputProps={{ name: 'sltedWheelWidthIndex' }}
                                              >
                                                 {wheelsWidthsData[state.sltedWheelDiameterIndex].map((width, index) => (
                                                    <MenuItem key={index} value={width.id}>{width.label}"</MenuItem>
@@ -731,7 +803,6 @@ const VerticalTabs = ({
                                        value={state.sltedSuspensionSize}
                                        onChange={sltSuspensionSize}
                                        labelWidth={40}
-                                       inputProps={{ name: 'sltedSuspensionSize' }}
                                     >
                                        <MenuItem value={0}>0</MenuItem>
                                        {state.modelData[0] && state.modelData[0].modelSizeArr.map((size, index) => (
@@ -745,7 +816,7 @@ const VerticalTabs = ({
                      }
                      {/* Color Select Section */}
                      {
-                        configOptions[state.sltedPartialIndex].label !== 'Tire' && // if selected partial is not Tire
+                        configOptions[state.sltedPartialIndex].label !== 'Tire' && configOptions[state.sltedPartialIndex].label !== 'Setting' && // if selected partial is not Tire and Setting
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                            <Divider variant="middle" />
                            <Grid container className="pt-20" >

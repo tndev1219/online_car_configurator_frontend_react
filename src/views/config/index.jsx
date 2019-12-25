@@ -75,6 +75,10 @@ class Config extends React.Component {
       console.log(value);
    };
 
+   changeEnvMap = (value) => {
+      console.log(value);
+   };
+
    showAllBodyAnnotation = () => {
       window.viewer3D.showAllBodyAnnotation();
    };
@@ -101,6 +105,7 @@ class Config extends React.Component {
                      changeBodyPartColor={this.changeBodyPartColor}
                      changeBodyGlassOpacity={this.changeBodyGlassOpacity}
                      changeWheelDistance={this.changeWheelDistance}
+                     changeEnvMap={this.changeEnvMap}
                      bodyPartOptions={this.state.bodyPartOptions}
                      showAllBodyAnnotation={this.showAllBodyAnnotation}
                      hideAllBodyAnnotation={this.hideAllBodyAnnotation}
