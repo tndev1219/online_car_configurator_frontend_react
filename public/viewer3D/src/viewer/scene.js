@@ -1,9 +1,12 @@
 var scene3D = null;
 
-function ModelScene(envData, vehicleModel) {
+function ModelScene(loader) {
+
+    this.loader = loader;
+
     this.container = g_CanvasContainer;
-    this.vehicleModel = vehicleModel;
-    this.envData = envData;
+    this.vehicleModel = loader.vehicleModel;
+    this.envData = loader.envData;
     this.width = this.container.width();
     this.height = this.container.height();
     this.screenRatio = this.width / this.height;
@@ -135,6 +138,7 @@ ModelScene.prototype.init = function () {
     this.wheels = [];
     this.wheelDiameter = 22;
     this.wheelWidth = 12;
+    this.wheelDistance = 0;
     this.wheelColor = null;
 
     this.wheelDiameterScale = 1;
@@ -216,11 +220,13 @@ ModelScene.prototype.init = function () {
 
         //Add wheel
         if (partialModel.name.includes("wheel")) {
+            partialModel.originDis = partialModel.position.x;
             this.wheels.push(partialModel);
         }
 
         //Add tire
         if (partialModel.name.includes("tire")) {
+            partialModel.originDis = partialModel.position.x;
             this.tires.push(partialModel);
         }
 
@@ -611,6 +617,18 @@ ModelScene.prototype.setWheelSize = function (diameter, width) {
     }
 }
 
+ModelScene.prototype.setWheelDistance = function (distance) {
+    
+    this.wheelDistance = distance * 0.0254;
+
+    for (var i = 0; i < this.wheels.length; i++) {
+        this.wheels[i].position.x = this.wheels[i].originDis > 0 ? this.wheels[i].originDis + this.wheelDistance : this.wheels[i].originDis - this.wheelDistance;
+    }
+    for (var i = 0; i < this.tires.length; i++) {
+        this.tires[i].position.x = this.tires[i].originDis > 0 ? this.tires[i].originDis + this.wheelDistance : this.tires[i].originDis - this.wheelDistance;
+    }
+}
+
 ModelScene.prototype.setTireSize = function (diameter) {
 
     this.tireDiameter = diameter;
@@ -846,6 +864,33 @@ ModelScene.prototype.showAllBodyAnnotation = function () {
     this.bodyTargets.forEach(function (t) {
         t.fadeShow();
     })
+}
+
+ModelScene.prototype.setHDRI = function (val) {
+
+    var self = this;
+    this.loader.rgbLoader
+        .setType(THREE.UnsignedByteType)
+        .setPath('viewer3D/models/env/')
+        .load(val + '.hdr', function (texture) {
+            var cubeGenerator = new THREE.EquirectangularToCubeGenerator(texture, { resolution: 1024 });
+            cubeGenerator.update(self.renderer);
+            var pmremGenerator = new THREE.PMREMGenerator(cubeGenerator.renderTarget.texture);
+            pmremGenerator.update(self.renderer);
+            var pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(pmremGenerator.cubeLods);
+            pmremCubeUVPacker.update(self.renderer);
+            self.envMap = pmremCubeUVPacker.CubeUVRenderTarget.texture;
+            pmremGenerator.dispose();
+            pmremCubeUVPacker.dispose();
+
+            self.scene.traverse(function(child){
+                if(child.isMesh){
+                    child.material.envMap = self.envMap
+                }
+            })
+        });
+
+
 }
 
 ModelScene.prototype.hideAllBodyAnnotation = function () {

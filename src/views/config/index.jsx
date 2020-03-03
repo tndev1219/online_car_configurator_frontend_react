@@ -72,11 +72,11 @@ class Config extends React.Component {
    };
 
    changeWheelDistance = (value) => {
-      console.log(value);
+      window.viewer3D.setWheelDistance(value);
    };
 
    changeEnvMap = (value) => {
-      console.log(value);
+      window.viewer3D.setHDRI(value);
    };
 
    showAllBodyAnnotation = () => {

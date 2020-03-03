@@ -118,9 +118,24 @@ const partialBar = [
 
 const envOptions = [
    { 
+      menuContent: <img src={require('../../../assets/images/env/venicesunset.jpg')} alt='venicesunset' width={187} />,
+      previewContent: <img src={require('../../../assets/images/env/venicesunset.jpg')} alt='venicesunset' style={{marginTop: 10}} />,
+      label: 'VeniceSunset'
+   },
+   { 
+      menuContent: <img src={require('../../../assets/images/env/pedestrian.jpg')} alt='pedestrian' width={187} />,
+      previewContent: <img src={require('../../../assets/images/env/pedestrian.jpg')} alt='pedestrian' style={{marginTop: 10}} />,
+      label: 'Pedestrian'
+   },
+   { 
       menuContent: <img src={require('../../../assets/images/env/parking.jpg')} alt='parking' width={187} />,
       previewContent: <img src={require('../../../assets/images/env/parking.jpg')} alt='parking' style={{marginTop: 10}} />,
       label: 'Parking'
+   },
+   { 
+      menuContent: <img src={require('../../../assets/images/env/tunnel.jpg')} alt='tunnel' width={187} />,
+      previewContent: <img src={require('../../../assets/images/env/tunnel.jpg')} alt='tunnel' style={{marginTop: 10}} />,
+      label: 'Tunnel'
    },
    { 
       menuContent: <img src={require('../../../assets/images/env/environment.jpg')} alt='environment' width={187} />,
@@ -384,9 +399,9 @@ const VerticalTabs = ({
          return;
       }
 
-      changeEnvMap(envOptions[event.target.value].label);
-      
       setState({ ...state, sltedEnvOption: event.target.value });
+      
+      changeEnvMap(envOptions[event.target.value].label);
    };
 
    const sltBodyPartOption = event => {
@@ -775,14 +790,19 @@ const VerticalTabs = ({
                                     </Grid>
                                     <Grid container justify='center' alignItems='center' className="mb-10">
                                        <Grid item style={{ width: 220 }}>
-                                          <PrettoSlider
-                                             className="mt-40"
-                                             valueLabelDisplay="on"
-                                             value={state.sltedWheelDistance}
-                                             max={4}
-                                             step={0.1}
-                                             onChange={(e, value) => sltWheelDistance(value)}
-                                          />
+                                          <div 
+                                             className="wheel-distance-wrap"
+                                          >
+                                             <p className="wheel-distance-label">Distance</p>
+                                             <p className="wheel-distance-value">{state.sltedWheelDistance}"</p>
+                                             <PrettoSlider
+                                                className="wheel-diatance-slider"
+                                                value={state.sltedWheelDistance}
+                                                max={4}
+                                                step={0.1}
+                                                onChange={(e, value) => sltWheelDistance(value)}
+                                             />
+                                          </div>
                                        </Grid>
                                     </Grid>
                                  </>

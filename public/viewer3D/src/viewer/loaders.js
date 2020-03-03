@@ -34,7 +34,7 @@ function AssetLoader() {
 				//Create new scene
 				g_CanvasContainer.html('');
 
-				self.modelScene = new ModelScene(self.envData, self.vehicleModel);
+				self.modelScene = new ModelScene(self);
 				self.modelScene.run();
 
 				self.vehicleLoad = false;
@@ -84,7 +84,7 @@ function AssetLoader() {
 }
 
 AssetLoader.prototype.loadEnvAndVehicle = function (url, callback) {
-	this.loadEnvMap();
+	this.loadEnvMap('VeniceSunset');
 	this.loadGLTFZip(url, 'Vehicle', callback);
 }
 
@@ -156,12 +156,12 @@ AssetLoader.prototype.loadGLTFZip = function (url, type, callback) {
 	});
 }
 
-AssetLoader.prototype.loadEnvMap = function () {
+AssetLoader.prototype.loadEnvMap = function (name) {
 	var self = this;
 	this.rgbLoader
 		.setType(THREE.UnsignedByteType)
-		.setPath('viewer3D/models/env/equirectangular/')
-		.load('venice_sunset_2k.hdr', function (texture) {
+		.setPath('viewer3D/models/env/')
+		.load( name + '.hdr', function (texture) {
 			self.envData.textures.env = texture;
 		});
 

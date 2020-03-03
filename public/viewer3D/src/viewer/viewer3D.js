@@ -54,6 +54,15 @@ Viewer3D.prototype.showAllBodyAnnotation = function () {
   this.assetLoader.modelScene.showAllBodyAnnotation();
 }
 
+Viewer3D.prototype.setHDRI = function (val) {
+  this.assetLoader.modelScene.setHDRI(val);
+}
+
+Viewer3D.prototype.setWheelDistance = function (val) {
+  this.assetLoader.modelScene.setWheelDistance(val);
+}
+
+
 Viewer3D.prototype.hideAllBodyAnnotation = function () {
   this.assetLoader.modelScene.hideAllBodyAnnotation();
 }
